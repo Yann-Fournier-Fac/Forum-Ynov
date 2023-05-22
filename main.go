@@ -73,6 +73,7 @@ var tmplAuth = template.Must(template.ParseFiles("./html/authentification.html")
 var tmplPost = template.Must(template.ParseFiles("./html/post.html"))
 var tmplNewPost = template.Must(template.ParseFiles("./html/newpost.html"))
 var HomeStruct, PostStruct = initStruct()
+
 // var HomeStruct PageHome
 
 func main() {
@@ -93,39 +94,56 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
+var truc = "home"
+
+func filter(HomeStruct *PageHome) {
+	if truc == "home" {
+		HomeStruct.Posts = database.GetAllPost()
+	} else if truc == "films" {
+		HomeStruct.Posts = database.GetTagFilm()
+	} else if truc == "series" {
+		HomeStruct.Posts = database.GetTagSerie()
+	} else if truc == "Plikes" {
+		HomeStruct.Posts = database.SelectByDescending("nbrLikes")
+	} else if truc == "Pdislikes" {
+		HomeStruct.Posts = database.SelectByDescending("NbrDislikes")
+	} else if truc == "Mlikes" {
+		HomeStruct.Posts = database.SelectByAscending("nbrLikes")
+	} else if truc == "Mdislikes" {
+		HomeStruct.Posts = database.SelectByAscending("NbrDislikes")
+	}
+}
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	buLikesDislikes := r.FormValue("bulike/dislike")
 	if buLikesDislikes != "" {
-		v := strings.Split(buLikesDislikes, ",")
-		if v[1] == "like" {
-			fmt.Println(v[0], "Like")
-		} else {
-			fmt.Println(v[0], "Dislike")
+		idBu := strings.Split(buLikesDislikes, ",")
+		if idBu[1] == "like" {
+			nbr := database.RecupNbr("nbrLikes", idBu[0])
+			nbr += 1
+			database.UpdateNbr("nbrLikes", nbr, idBu[0])
+			//fmt.Println(idBu[0], "Like")
+		} else if idBu[1] == "dislike"{
+			nbr := database.RecupNbr("nbrDislikes", idBu[0])
+			nbr += 1 
+			database.UpdateNbr("nbrDislikes", nbr, idBu[0])
+			fmt.Println(idBu[0], "Dislike")
 		}
 	}
+	buLikesDislikes = ""
+
 	headerLinks := r.FormValue("link")
 	if headerLinks != "" {
-		if headerLinks == "home" {
-			HomeStruct.Posts = database.GetAllPost()
-		} else if headerLinks == "films" {
-			HomeStruct.Posts = database.GetTagFilm()
-		} else if headerLinks == "series" {
-			HomeStruct.Posts = database.GetTagSerie()
-		}
+		truc = headerLinks
 	}
+
 	BuMenuDeroulant := r.FormValue("BuMenuDeroulant")
 	if BuMenuDeroulant != "" {
-		if BuMenuDeroulant == "Plikes" {
-			HomeStruct.Posts = database.SelectByDescending("nbrLikes")
-		} else if BuMenuDeroulant == "Pdislikes" {
-			HomeStruct.Posts = database.SelectByDescending("NbrDislikes")
-		} else if BuMenuDeroulant == "Mlikes" {
-			HomeStruct.Posts = database.SelectByAscending("nbrLikes")
-		} else if BuMenuDeroulant == "Mdislikes" {
-			HomeStruct.Posts = database.SelectByAscending("NbrDislikes")
-		}
+		truc = BuMenuDeroulant
 	}
+
+	filter(&HomeStruct)
+
 	err := tmplHome.Execute(w, HomeStruct)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

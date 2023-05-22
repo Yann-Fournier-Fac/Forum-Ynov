@@ -393,11 +393,33 @@ func SelectByDescending(filter string) []Post {
 	return res
 }
 
-func updateNbr(db *sql.DB, table string, data string, webData int) *sql.Rows {
-	query := "UPDATE " + table + " SET " + data + " = " + strconv.Itoa(webData) + ";"
-	result, err := db.Query(query)
+func RecupNbr(data string,id string) int {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+
+	quer := "SELECT " + data + " FROM posts WHERE id=" + id +";"
+	resul, e := db.Query(quer)
+	if e != nil {
+		log.Fatal(e)
+	}
+	var nbrLikes int
+	for resul.Next() {
+		er := resul.Scan(&nbrLikes)
+		if er != nil {
+			log.Fatal(er)
+		}
+		//fmt.Println(nbrLikes)
+	}
+	return nbrLikes
+}
+
+func UpdateNbr(data string, nbr int, id string) {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+	query := "UPDATE posts SET " + data + " = " + strconv.Itoa(nbr) + " WHERE id= " + id + ";"
+	result, err := db.Exec(query)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return result
+	fmt.Println("Result update NBR : ", result)
 }
