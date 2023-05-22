@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ================= REMIX ICONS ================= -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- ================= CSS ================= -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- <link rel="stylesheet" href="/assets/css/styles.css"> -->
+
+    <title>Projet Forum Ynov</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /*background: url(5s.jpg);*/
+            background-color: #162938;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* ============= HEADER & NAVBAR ============= */
+        header{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 100px;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            align-items: center;
+            z-index: 99;
+            /* overflow: hidden; */
+        }
+
+        .logo{
+            font-size: 2rem;
+            color: #fff;
+            user-select: none;
+        }
+
+        .navbar {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .navbar .nav__links{
+            position: relative;
+            font-size: 1.3rem;
+            color: #fff;
+            text-decoration: none;
+            padding-top: 10px;
+            font-weight: 500;
+            margin-left: 10px;
+            border-style: none;
+            width: 100px;
+        }
+
+        /* =========== TRAITS SOUS NAVBAR =========== */
+        .navbar .nav__links::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 100%;
+            height: 3px;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            transform: scaleX(0);
+            transition: transform .5s;
+        }
+
+        .navbar .nav__links:hover::after{
+            transform: scaleX(1);
+            cursor: pointer;
+        }
+
+        /* =========== BOUTTONS NAVBAR =========== */
+
+        .navbar .filter{
+            font-size: 1.3rem;
+            margin-left: 40px;
+            color: #fff;
+            display: inline-block;
+        }
+        .ri-filter-line{
+            width: max-content;
+        }
+        .navbar .filter::after{
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 100%;
+            height: 3px;
+            background: #fff;
+            border-radius: 5px;
+            transform: scaleX(0);
+            transition: transform .5s;
+        }
+        .navbar .filter:hover::after{
+            transform: scaleX(1);
+        }
+        .navbar .filter:hover{
+            cursor: pointer;
+        }
+
+
+        /* The container <div> - needed to position the dropdown content */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        /* Dropdown Content (Hidden by Default) */
+        .dropdown-content {
+            display: none;
+            top: 30px;
+            left: -50px;
+            position: absolute;
+            background-color: none;
+            min-width: 160px;
+            box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        
+        /* Links inside the dropdown */
+        .dropdown-content .formu .BuMenuDeroulant{
+            color: #fff;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            backdrop-filter: blur(10px);
+            font-size: 1rem;
+            border-style: none;
+            border-radius: 0px;
+            margin: 0px;
+        }
+        
+        /* Change color of dropdown links on hover */
+        .dropdown-content a:hover {
+            background-color: rgba(241, 241, 241, 0.6);
+        }
+        
+        /* Show the dropdown menu on hover */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .navbar button{
+            width: 100%;
+            height: 50px;
+            background: transparent;
+            border: 2px solid #fff;
+            outline: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #fff;
+            font-weight: 500;
+            margin-left: 40px;
+            padding: .2rem .5rem;
+            transition: .5s;
+        }
+        nav button:hover{
+            background: rgba(255, 255, 255, .5);
+            color: #162938;
+        }
+
+        .buttons-navbar{
+            display: inline-block;
+        }
+
+        /* =============== SEARCH =============== */
+        /* .container{
+            height: auto;
+            margin-inline: 1.5rem;
+            display: inline-block;
+            display: grid;
+            place-items: center;
+        }
+
+        .search{
+            position: relative;
+            width: 50px;
+            height: 50px;
+            background-color: #fff;
+            box-shadow: 0 4px 24px hsla(222, 68%, 12%, .1);
+            border-radius: 4rem;
+            padding: 10px;
+            overflow: hidden;
+            transition: width .5s cubic-bezier(.9, 0, .3, .9);
+        }
+
+        .search__input{
+            background-color: var(--body-color);
+            border: none;
+            outline: none;
+            width: calc(100% - 64px);
+            height: 100%;
+            border-radius: 4rem;
+            padding-left: 14px;
+            font-family: var(--body-font);
+            font-size: var(--small-font-size);
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s;
+        }
+
+        .search__input:-webkit-autofill{
+            box-shadow: 0 0 0 100px var(--white-color) inset;
+        }
+
+        .search__button{
+            width: 3.125rem; /* soit 56 px 
+            height: 3.125rem; /* soit 56 px 
+            background-color: var(--dark-color);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: transform .6s cubic-bezier(.9, 0, .3, .9);
+        }
+
+        .search__icon,
+        .search__close{
+            color: var(--white-color);
+            font-size: 1.5rem;
+            position: absolute;
+            transition: opacity .5s cubic-bezier(.9, 0, .3, .9);
+        }
+
+        .search__close{
+            opacity: 0;
+        }
+
+        /* Search animated 
+        .show-search{
+            width: 100%;
+        } 
+
+        .show-search .search__input{
+            opacity: 1;
+            pointer-events: initial;
+        }
+
+        .show-search .search__button{
+            transform: rotate(90deg);
+        }
+
+        .show-search .search__icon{
+            opacity: 0;
+        }
+
+        .show-search .search__close {
+            opacity: 1;
+        } */
+        /* =============== CONNEXION FORM =============== */
+        .wrapper{
+            position: absolute;
+            width: 400px;
+            height: 440px;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, .5);
+            border-radius: 20px;
+            backdrop-filter: blur(50px);
+            box-shadow: 0 0 30px rgba(255, 255, 255, .5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transform: scale(0);
+            transition: transform .3s ease, height .3s ease;
+            z-index: 1;
+        }
+
+        .wrapper.login-popup{
+            transform: scale(1);
+        }
+        /* .wrapper.register-popup{
+            transform: scale(1);
+            position: absolute;
+            transform: translateX(-400px);
+            transition: transform .3s ease;
+        } */
+        .wrapper.register-popup.active{
+            transform: scale(1);
+        }
+        .wrapper.active{
+            height: 520px;
+        }
+
+        .wrapper .form-box{
+            width: 100%;
+            padding: 40px;
+        }
+
+        .wrapper .form-box.login{
+            transition: transform .3s ease;
+            transform: translateX(0);
+        }
+        .wrapper.active .form-box.login{
+            transition: none;
+            transform: translateX(-400px);
+        }
+
+        .wrapper .form-box.register{
+            position: absolute;
+            transition: none;
+            transform: translateX(400px);
+        }
+        .wrapper.active .form-box.register{
+            transition: transform .3s ease;
+            transform: translateX(0);
+        }
+
+        .wrapper .ri-close-line{
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, .5);
+            font-size: 2rem;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom-left-radius: 20px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        .form-box h2{
+            font-size: 2rem;
+            color: #fff;
+            text-align: center;
+        }
+
+        .input-box{
+            position: relative;
+            width: 100%;
+            height: 50px;
+            border-bottom: 2px solid #162938;
+            margin: 30px 0;
+        }
+        .input-box label{
+            position: absolute;
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: #fff;
+            font-weight: 500;
+            pointer-events: none;
+            transition: .5s;
+        }
+        .input-box input{
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: .8rem;
+            color: #fff;
+            font-weight: 600;
+            padding: 0 35px 0 5px;
+        }
+        .input-box input:focus~label,
+        .input-box input:valid~label{
+            top: -5px;
+        }
+        .input-box .icon{
+            position: absolute;
+            right: 8px;
+            font-size: 1.2rem;
+            color: #fff;
+            line-height: 57px;
+        }
+
+        .form-box-button{
+            width: 100%;
+            height: 45px;
+            background: #162938;
+            border: none;
+            outline: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .login-register{
+            font-size: .9rem;
+            color: #fff;
+            text-align: center;
+            font-weight: 500;
+            margin: 25px 0 10px;
+        }
+
+        .login-register p a{
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-register p a{
+            text-decoration: underline;
+        }
+        /*=============== BREAKPOINTS ===============*/
+        /* For medium devices */
+
+        /* ============= MAIN PAGE ============= */
+
+        /* ============= TOP POST WINDOW ============= */
+        .global__container{
+            margin-top: 175px;
+            width: 800px;
+            height: auto;
+            background: transparent;
+            backdrop-filter: blur(30px);
+            border-radius: 15px;
+            overflow: hidden;
+            padding-bottom: 1rem;
+        }
+        .global__container p{
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .global__container .header-post__container{
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px solid rgba(100, 100, 200, 1);
+            background: rgba(255, 255, 255, .7);
+        }
+
+        .global__container .header-post__container p{
+            font-size: 2rem;
+            font-weight: 600;
+            padding: 0 .5rem;
+            margin-left: 1rem;
+            color: rgba(40, 40, 40, 1);
+        }
+
+        .global__container .header-post__container .fo .new__subject{
+            height: 30px;
+            margin-top: auto;
+            margin-bottom: auto;
+            margin-right: 1rem;
+            padding: 0.2rem 0.5rem;
+            color: #fff;
+            background-color: #162938;
+            border-radius: 5px;
+            border: none;
+            transition: .5s;
+            margin-top: 8px;
+        }
+
+        .global__container .header-post__container .fo .new__subject:hover{
+            background-color: rgba(22, 41, 56, .9);
+        }
+
+        /* ============= LOW POST LIST ============= */
+
+        /* .post__list{
+            box-shadow: 0 0 5px white;
+        } */
+
+        /* ============= INDIVIDUAL POSTS ============= */
+
+        .post__subject{
+            margin-left: .5rem;
+            margin-right: .5rem;
+            padding-left: 1rem;
+            margin-top: .3rem;
+            border-bottom: 3px solid rgba(255, 255, 255, .3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post__subject .subject_title{
+            color: #fff;
+        }
+        .post__subject .subject_title span{
+            color: rgba(255, 0, 25, 1);
+        }
+
+        .post__list .post__subject .subject__description{
+            color: rgba(180, 180, 180, 1);
+            font-size: .8rem;
+            margin-bottom: .5rem;
+        }
+        .post__list .post__subject .subject__description span{
+            color: #fff;
+        }
+
+        .right__subject form{
+            display: flex;
+            gap: 1rem;
+            width: 60px;
+            flex-direction: row;
+        }
+        .right__subject form button{
+            width: 100%;
+            height: 100%;
+            background: none;
+            border: none;
+        }
+
+        .right__subject form button:hover{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body onload=fonction_a_executer_a_la_fin()>
+    <header>
+        <h1 class="logo">FORUM</h2>
+        <nav class="navbar">
+            <form class="f" action="/" method="post">
+                <button class="nav__links" name="link" value="home">Home</button>
+                <button class="nav__links" name="link" value="films">Films</button>
+                <button class="nav__links" name="link" value="series">Séries</button>
+            </form>
+            <div class="filter dropdown">
+                <i class="ri-filter-line"></i>
+                <i class="ri-arrow-drop-down-fill"></i>
+                <div class="dropdown-content">
+                    <form class="formu" action="/">
+                        <button class="BuMenuDeroulant" name="BuMenuDeroulant" value="Plikes">Les plus likés</button>
+                        <button class="BuMenuDeroulant" name="BuMenuDeroulant" value="Pdislikes">Les plus dislikés</button>
+                        <button class="BuMenuDeroulant" name="BuMenuDeroulant" value="Mlikes">Les moins likés</button>
+                        <button class="BuMenuDeroulant" name="BuMenuDeroulant" value="Mdislikes">Les moins dislikés</button>
+                    </form>
+                </div>          
+            </div>
+                <div class="buttons-navbar">
+                    <form action="/login" method="post">
+                        <button class="button__login-popup" value="seConnecter">Se connecter / S'inscrire</button>
+                    </form>
+                </div>
+            </nav>
+    </header>
+
+    <div class="wrapper">
+        <i class="ri-close-line"></i>
+        <div class="form-box login">
+            <h2>Connectez-vous</h2>
+            <form action="#">
+                <div class="input-box">
+                    <i class="ri-mail-line icon"></i>
+                    <input type="email" required>
+                    <label>Email</label>
+                </div>
+                <div class="input-box">
+                    <i class="ri-lock-line icon"></i>
+                    <input type="password" required>
+                    <label>Mot de passe</label>
+                </div>
+                <button type="submit" class="form-box-button">Login</button>
+
+                <div class="login-register">
+                    <p>Vous n'avez pas de compte ?<br>
+                    <a href="#" class="register-link">Inscrivez-vous içi</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <div class="form-box register">
+            <h2>Inscrivez-vous</h2>
+            <form action="#">
+                <div class="input-box">
+                    <i class="ri-user-fill icon"></i>
+                    <input type="text" required>
+                    <label>Nom d'utilisateur</label>
+                </div>
+                <div class="input-box">
+                    <i class="ri-mail-line icon"></i>
+                    <input type="email" required>
+                    <label>Email</label>
+                </div>
+                <div class="input-box">
+                    <i class="ri-lock-line icon"></i>
+                    <input type="password" required>
+                    <label>Mot de passe</label>
+                </div>
+                <button type="submit" class="form-box-button">Inscription</button>
+
+                <div class="login-register">
+                    <p>Vous avez un compte ?<br>
+                    <a href="#" class="login-link">Connectez-vous içi</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <main class="global__container">
+        <div class="header-post__container">
+            <p style="margin-top: 5px;">Posts</p>
+            <form class="fo" action="/newpost">
+                <button class="new__subject">
+                    <i class="ri-add-line"></i>
+                    Créer un nouveau post
+                </button>
+            </form>
+        </div>
+
+        <div class="post__list">
+            <div class="post__subject" id="post-{{.Id}}">
+                <div class="left__subject">
+                    <p class="subject_title">
+                        <a href="">Titre</a> <span>#Tag</span>
+                    </p>
+                    <p style="color: #fff;margin: 5px;;">Description</p>
+                    <p class="subject__description">
+                        Par <span>Author</span>
+                    </p>
+                </div>
+                <div class="right__subject">
+                    <form action="/">
+                        <button class="bulike/dislike" name="bulike/dislike" value="{{.Id}},like" disabled="disabled">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 8.99997H5V21H2C1.44772 21 1 20.5523 1 20V9.99997C1 9.44769 1.44772 8.99997 2 8.99997ZM7.29289 7.70708L13.6934 1.30661C13.8693 1.13066 14.1479 1.11087 14.3469 1.26016L15.1995 1.8996C15.6842 2.26312 15.9026 2.88253 15.7531 3.46966L14.5998 7.99997H21C22.1046 7.99997 23 8.8954 23 9.99997V12.1043C23 12.3656 22.9488 12.6243 22.8494 12.8658L19.755 20.3807C19.6007 20.7554 19.2355 21 18.8303 21H8C7.44772 21 7 20.5523 7 20V8.41419C7 8.14897 7.10536 7.89462 7.29289 7.70708Z" fill="rgba(0,255,13,1)"></path></svg>
+                            <span style="color:#fff">44</span>
+                        </button>
+                        <button class="budislike/dislike" name="bulike/dislike" value="{{.Id}},dislike">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 15H19V3H22C22.5523 3 23 3.44772 23 4V14C23 14.5523 22.5523 15 22 15ZM16.7071 16.2929L10.3066 22.6934C10.1307 22.8693 9.85214 22.8891 9.65308 22.7398L8.8005 22.1004C8.3158 21.7369 8.09739 21.1174 8.24686 20.5303L9.40017 16H3C1.89543 16 1 15.1046 1 14V11.8957C1 11.6344 1.05118 11.3757 1.15064 11.1342L4.24501 3.61925C4.3993 3.24455 4.76447 3 5.16969 3H16C16.5523 3 17 3.44772 17 4V15.5858C17 15.851 16.8946 16.1054 16.7071 16.2929Z" fill="rgba(255,6,6,1)"></path></svg>
+                            <span style="color:#fff">55</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {{range .Posts}}
+                <div class="post__subject" id="post-{{.Id}}">
+                    <div class="left__subject">
+                        <p class="subject_title">
+                            <a href="">{{.Titre}}</a> <span>#{{.Tag}}</span>
+                        </p>
+                        <p style="color: #fff;margin: 5px;;">{{.Description}}</p>
+                        <p class="subject__description">
+                            Par <span>Author</span>
+                        </p>
+                    </div>
+                    <div class="right__subject">
+                        <form action="/">
+                            <button class="bulike/dislike" name="bulike/dislike" value="{{.Id}},like" disabled="disabled">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 8.99997H5V21H2C1.44772 21 1 20.5523 1 20V9.99997C1 9.44769 1.44772 8.99997 2 8.99997ZM7.29289 7.70708L13.6934 1.30661C13.8693 1.13066 14.1479 1.11087 14.3469 1.26016L15.1995 1.8996C15.6842 2.26312 15.9026 2.88253 15.7531 3.46966L14.5998 7.99997H21C22.1046 7.99997 23 8.8954 23 9.99997V12.1043C23 12.3656 22.9488 12.6243 22.8494 12.8658L19.755 20.3807C19.6007 20.7554 19.2355 21 18.8303 21H8C7.44772 21 7 20.5523 7 20V8.41419C7 8.14897 7.10536 7.89462 7.29289 7.70708Z" fill="rgba(0,255,13,1)"></path></svg>
+                                <span style="color:#fff">{{.NbrLikes}}</span>
+                            </button>
+                            <button class="bulike/dislike" name="bulike/dislike" value="{{.Id}},dislike">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 15H19V3H22C22.5523 3 23 3.44772 23 4V14C23 14.5523 22.5523 15 22 15ZM16.7071 16.2929L10.3066 22.6934C10.1307 22.8693 9.85214 22.8891 9.65308 22.7398L8.8005 22.1004C8.3158 21.7369 8.09739 21.1174 8.24686 20.5303L9.40017 16H3C1.89543 16 1 15.1046 1 14V11.8957C1 11.6344 1.05118 11.3757 1.15064 11.1342L4.24501 3.61925C4.3993 3.24455 4.76447 3 5.16969 3H16C16.5523 3 17 3.44772 17 4V15.5858C17 15.851 16.8946 16.1054 16.7071 16.2929Z" fill="rgba(255,6,6,1)"></path></svg>
+                                <span style="color:#fff">{{.NbrDislikes}}</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {{end}}
+        </div>
+    </main>
+
+    <!-- ================= SCRIPTS ================= -->
+    <!-- <script src="script.js"></script> -->
+
+    <!-- <script src="search.js"></script> -->
+</body>
+<script>
+    const wrapper = document.querySelector('.wrapper');
+    const loginLink = document.querySelector('.login-link');
+    const registerLink = document.querySelector('.register-link');
+    const buttonLoginPopup = document.querySelector('.button__login-popup');
+    const buttonRegisterPopup = document.querySelector('.button__register-popup');
+    const closeButton = document.querySelector('.ri-close-line');
+
+    registerLink.addEventListener('click', () => {
+        wrapper.classList.add('active');
+    });
+
+    loginLink.addEventListener('click', () => {
+        wrapper.classList.remove('active');
+    });
+
+    buttonLoginPopup.addEventListener('click', () => {
+        wrapper.classList.add('login-popup');
+    });
+    // buttonRegisterPopup.addEventListener('click', () => {
+    //     wrapper.classList.add('register-popup');
+    //     // wrapper.classList.add('active');
+    // });
+
+    closeButton.addEventListener('click', () => {
+        wrapper.classList.remove('login-popup');
+        wrapper.classList.remove('active');
+    });
+
+    // function fonction_a_executer_a_la_fin() {
+    //     var buttonLikesDislikes = document.querySelectorAll(".bulike/dislike");
+    //     console.log(buttonLikesDislikes);
+    // }
+
+</script>
+</html>

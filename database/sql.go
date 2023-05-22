@@ -1,0 +1,403 @@
+package database
+
+import (
+	"database/sql"
+	"fmt"
+	"log"
+	"strconv"
+)
+
+func Database() {
+	databaseAll := InitDatabase("forum.db")
+	defer databaseAll.Close()
+	sqlStmt := `
+
+	CREATE TABLE IF NOT EXISTS users (
+		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+		email TEXT NOT NULL, 
+		username TEXT NOT NULL, 
+		password TEXT NOT NULL
+	);
+
+	CREATE TABLE IF NOT EXISTS reponses (
+		id INTEGER NOT NULL,
+		idUser INTEGER NOT NULL,
+		idPost INTEGER NOT NULL,  
+		contenu TEXT NOT NULL,
+		PRIMARY KEY (id), 
+		FOREIGN KEY (idUser) REFERENCES users(id),
+		FOREIGN KEY (idPost) REFERENCES posts(id)
+	);
+
+	CREATE TABLE IF NOT EXISTS posts (
+		id INTEGER NOT NULL,
+		idUser INTEGER NOT NULL,
+		tag TEXT NOT NULL,
+		titre TEXT NOT NULL,
+		description TEXT NOT NULL,
+		nbrLikes INTEGER,
+		nbrDislikes INTEGER,
+		PRIMARY KEY (id),
+		FOREIGN KEY (idUser) REFERENCES users(id)
+	);
+
+	CREATE TABLE IF NOT EXISTS sessions (
+		id INTEGER NOT NULL,
+		uuid INTEGER NOT NULL,
+		PRIMARY KEY (id)
+	);
+		`
+
+	_, err := databaseAll.Exec(sqlStmt)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// _, err = databaseAll.Exec("PRAGMA foreign_keys = ON;") // doit tjs effacer db d'abord avant de run SI db actuel n'a pas foreign key activée + doit le run en dernier
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+}
+
+func DatabaseAndUsers(values []string) {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+	sqlStmtInsertUsers := `
+		INSERT INTO users (email, username, password) VALUES (?, ?, ?);
+		`
+	// TODO remplacer par les valeurs get du web
+	InsertIntoRow(db, values, sqlStmtInsertUsers)
+	// rowsUser := selectAllFrom(databaseAll, "users")
+	// displayUserRow(rowsUser)
+}
+
+func DatabaseAndReponse(values []string) {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+	sqlStmtInsertReponses := `
+		INSERT INTO reponses (idUser, idPost, contenu) VALUES (?, ?, ?);
+		`
+	InsertIntoRow(db, values, sqlStmtInsertReponses)
+	// rowsReponse := selectAllFrom(databaseAll, "reponses")
+	// displayReponseRow(rowsReponse)
+}
+
+func DatabaseAndPost(values []string) {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+	sqlStmtInsertPosts := `
+		INSERT INTO posts (idUser, tag, titre, description, nbrLikes, nbrDislikes) VALUES (?, ?, ?, ?, ?, ?);
+		`
+	// TODO remplacer par valeurs ?
+	InsertIntoRow(db, values, sqlStmtInsertPosts)
+	// Toutes les fonctions possibles ( telles ou telles s'activent avec des if relier au boutons )
+	// rowsPost := selectAllFrom(databaseAll, "posts")
+	// rowsPost = selectByAscending(databaseAll, "posts", "nbrLikes")
+	// rowsPost = selectByDescending(databaseAll, "posts", "nbrLikes")
+	// rowsPost = updateNbr(databaseAll, "posts", "nbrLikes", 3) // 3 à remplacer par la valeur javascript du site ( doit actuellement être en int )
+	// displayPostRow(rowsPost)
+}
+
+func DatabaseAndSession(values []string) {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+	sqlStmtInsertPosts := `
+		INSERT INTO sessions (uuid) VALUES (?);
+		`
+	// TODO remplacer par valeurs ?
+	InsertIntoRow(db, values, sqlStmtInsertPosts)
+}
+
+func InitDatabase(dataBaseName string) *sql.DB {
+	// ./ + database pr le mettre au bon endroit
+	database, err := sql.Open("sqlite3", "./database/"+dataBaseName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return database
+}
+
+func InsertIntoRow(db *sql.DB, values []string, stmt string) (int64, error) {
+	// Use of interface for go's variadic parameters feature
+	args := make([]interface{}, len(values))
+	for i, v := range values {
+		args[i] = v
+	}
+	row, err := db.Exec(stmt, args...)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return row.LastInsertId()
+}
+
+// func DisplayUserRow(rows *sql.Rows) {
+// 	// tableau d'objet, à tester si ça ira
+// 	var htmlTable []User
+// 	for rows.Next() {
+// 		// debug console
+// 		var user User
+// 		err := rows.Scan(&user.Id, &user.Email, &user.Username, &user.Password)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		// %s = %v
+// 		htmlTable = append(htmlTable, user)
+// 	}
+// 	fmt.Printf("web user : %v ", htmlTable)
+// 	fmt.Println()
+// }
+
+// func DisplayReponseRow(rows *sql.Rows) {
+// 	// tableau d'objet, à tester si ça ira
+// 	var htmlTable []Reponse
+// 	for rows.Next() {
+// 		// debug console
+// 		var reponse Reponse
+// 		err := rows.Scan(&reponse.Id, &reponse.IdUser, &reponse.IdPost, &reponse.Contenu)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		// %s = %v
+// 		htmlTable = append(htmlTable, reponse)
+// 	}
+// 	fmt.Printf("web reponse : %v ", htmlTable)
+// 	fmt.Println()
+// }
+
+// func DisplayPostRow(rows *sql.Rows) {
+// 	// tableau d'objet, à tester si ça ira
+// 	var htmlTable []Post
+// 	for rows.Next() {
+// 		// debug console
+// 		var post Post
+// 		err := rows.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		// %s = %v
+// 		htmlTable = append(htmlTable, post)
+// 	}
+// 	fmt.Printf("web post : %v ", htmlTable)
+// 	fmt.Println()
+// }
+
+// Function Gets $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+func GetAllPost() []Post {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+
+	query := "SELECT * FROM posts;"
+	// rendu de la requête, recup info
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var res []Post
+	for result.Next() {
+		// debug console
+		var post Post
+		err := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// %s = %v
+		res = append(res, post)
+	}
+
+	return res
+}
+
+func GetOnePost(id string) Post {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+
+	query := "SELECT * FROM posts WHERE id= '" + id + "';"
+	// rendu de la requête, recup info
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var post Post
+	err2 := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+	if err2 != nil {
+		log.Fatal(err)
+	}
+	return post
+}
+
+func GetResponses(id string) []Reponse {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+
+	query := "SELECT * FROM reponses WHERE idPost = '" + id + "';"
+	// rendu de la requête, recup info
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var res []Reponse
+	for result.Next() {
+		var reponse Reponse
+		err := result.Scan(&reponse.Id, &reponse.IdUser, &reponse.IdPost, &reponse.Contenu)
+		if err != nil {
+			log.Fatal(err)
+		}
+		res = append(res, reponse)
+	}
+	return res
+}
+
+func GetEmail(email string) {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+
+	query := "SELECT * FROM users WHERE email= '" + email + "';"
+	// rendu de la requête, recup info
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var res []User
+	for result.Next() {
+		var user User
+		err := result.Scan(&user.Id, &user.Email, &user.Username, &user.Password)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// %s = %v
+		res = append(res, user)
+	}
+
+	fmt.Print(len(res))
+	fmt.Println()
+	// return result
+}
+
+func GetTagFilm() []Post {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+
+	query := "SELECT * FROM posts WHERE tag='film';"
+	// rendu de la requête, recup info
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var res []Post
+	for result.Next() {
+		// debug console
+		var post Post
+		err := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// %s = %v
+		res = append(res, post)
+	}
+
+	return res
+}
+
+func GetTagSerie() []Post {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+
+	query := "SELECT * FROM posts WHERE tag='serie';"
+	// rendu de la requête, recup info
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var res []Post
+	for result.Next() {
+		// debug console
+		var post Post
+		err := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// %s = %v
+		res = append(res, post)
+	}
+
+	return res
+}
+
+func GetSession(id string) {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+
+	query := "SELECT * FROM sessions WHERE id = '" + id + "';" //WHERE users.email='" + mail +"';"
+	// rendu de la requête, recup info
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var res []Session
+	for result.Next() {
+		// debug console
+		var session Session
+		err := result.Scan(&session.Id, &session.Uuid)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// %s = %v
+		res = append(res, session)
+	}
+
+	fmt.Print(len(res))
+	fmt.Println()
+	// return result
+}
+
+func SelectByAscending(filter string) []Post {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+	query := "SELECT * FROM posts ORDER BY " + filter + " ASC;"
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var res []Post
+	for result.Next() {
+		var post Post
+		err := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+		if err != nil {
+			log.Fatal(err)
+		}
+		res = append(res, post)
+	}
+	return res
+}
+
+func SelectByDescending(filter string) []Post {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+	query := "SELECT * FROM posts ORDER BY " + filter + " DESC;"
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var res []Post
+	for result.Next() {
+		var post Post
+		err := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+		if err != nil {
+			log.Fatal(err)
+		}
+		res = append(res, post)
+	}
+	return res
+}
+
+func updateNbr(db *sql.DB, table string, data string, webData int) *sql.Rows {
+	query := "UPDATE " + table + " SET " + data + " = " + strconv.Itoa(webData) + ";"
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return result
+}
