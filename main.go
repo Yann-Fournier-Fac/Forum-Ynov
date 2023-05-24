@@ -8,13 +8,16 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type PageHome struct {
 	Posts           []database.Post
 	IsConnecter     bool
 	ConnectUserInfo string
+	Try             bool
 }
 
 type PagePost struct {
@@ -23,14 +26,14 @@ type PagePost struct {
 	IsConnecter bool
 }
 
-func dbRemplissage() {
+func ResetDB() {
 	database.Database()
 
-	database.DatabaseAndUsers([]string{"yann@ynov.com", "Yann", "yann"})
-	database.DatabaseAndUsers([]string{"elisa@ynov.com", "Elisa", "elisa"})
-	database.DatabaseAndUsers([]string{"kevin@ynov.com", "Kévin", "kevin"})
-	database.DatabaseAndUsers([]string{"liliane@ynov.com", "Liliane", "liliane"})
-	database.DatabaseAndUsers([]string{"joshua@ynov.com", "Joshua", "joshua"})
+	database.DatabaseAndUsers([]string{"yann@ynov.com", "Yann", HashPassword("yann")})
+	database.DatabaseAndUsers([]string{"elisa@ynov.com", "Elisa", HashPassword("elisa")})
+	database.DatabaseAndUsers([]string{"kevin@ynov.com", "Kévin", HashPassword("kevin")})
+	database.DatabaseAndUsers([]string{"liliane@ynov.com", "Liliane", HashPassword("liliane")})
+	database.DatabaseAndUsers([]string{"joshua@ynov.com", "Joshua", HashPassword("joshua")})
 
 	database.DatabaseAndPost([]string{strconv.Itoa(1), "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), strconv.Itoa(0), strconv.Itoa(0)})
 	database.DatabaseAndPost([]string{strconv.Itoa(1), "serie", "Second Post", "Moi j'adore GOT", strconv.Itoa(2), strconv.Itoa(33)})
@@ -52,10 +55,6 @@ func dbRemplissage() {
 	database.DatabaseAndSession([]string{"qsd"})
 }
 
-// func main() {
-// 	dbRemplissage()
-// }
-
 func initStruct() (PageHome, PagePost) {
 	var home PageHome
 	home.Posts = database.GetAllPost()
@@ -68,8 +67,6 @@ func initStruct() (PageHome, PagePost) {
 }
 
 var tmplHome = template.Must(template.ParseFiles("./html/home.html"))
-var tmplLogin = template.Must(template.ParseFiles("./html/login.html"))
-var tmplAuth = template.Must(template.ParseFiles("./html/authentification.html"))
 var tmplPost = template.Must(template.ParseFiles("./html/post.html"))
 var tmplNewPost = template.Must(template.ParseFiles("./html/newpost.html"))
 var HomeStruct, PostStruct = initStruct()
@@ -78,13 +75,13 @@ var HomeStruct, PostStruct = initStruct()
 
 func main() {
 
+	// ResetDB()
+
 	fmt.Printf("\n")
 	fmt.Println("http://localhost:8080/")
 	fmt.Printf("\n")
 
 	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/login", logingHandler)
-	http.HandleFunc("/auth", authHandler)
 	http.HandleFunc("/post", postHandler)
 	http.HandleFunc("/newpost", newPostHandler)
 
@@ -123,14 +120,41 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 			nbr += 1
 			database.UpdateNbr("nbrLikes", nbr, idBu[0])
 			//fmt.Println(idBu[0], "Like")
-		} else if idBu[1] == "dislike"{
+		} else if idBu[1] == "dislike" {
 			nbr := database.RecupNbr("nbrDislikes", idBu[0])
-			nbr += 1 
+			nbr += 1
 			database.UpdateNbr("nbrDislikes", nbr, idBu[0])
 			fmt.Println(idBu[0], "Dislike")
 		}
 	}
-	buLikesDislikes = ""
+
+	// Connection -----------------------------------------------------------------
+	connectionEmail := r.FormValue("ConnectionEmail")
+	connectionMdp := r.FormValue("ConnectionMdp")
+	if connectionEmail != "" {
+		user := database.GetUser(connectionEmail)
+		fmt.Println(uuid.NewRandom())
+		fmt.Print(user)
+		if CheckPasswordHash(connectionMdp, user.Password) && user.Email == connectionEmail {
+			fmt.Println(true)
+		} else {
+			fmt.Println(false)
+		}
+	}
+
+	// Inscription ----------------------------------------------------------------
+	inscriptionName := r.FormValue("InscriptionName")
+	inscriptionEmail := r.FormValue("InscriptionEmail")
+	inscriptionMdp := r.FormValue("InscriptionMdp")
+	fmt.Println(inscriptionName)
+
+	if inscriptionName != "" {
+		if !database.GetEmail(inscriptionEmail) {
+			database.DatabaseAndUsers([]string{inscriptionEmail, inscriptionName, HashPassword(inscriptionMdp)})
+		} else {
+			fmt.Println("veuillez entrer une autre adresse mail. Celle-ci est déjà prise.")
+		}
+	}
 
 	headerLinks := r.FormValue("link")
 	if headerLinks != "" {
@@ -150,20 +174,6 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func logingHandler(w http.ResponseWriter, r *http.Request) {
-	err := tmplLogin.Execute(w, nil)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func authHandler(w http.ResponseWriter, r *http.Request) {
-	err := tmplAuth.Execute(w, nil)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
 func postHandler(w http.ResponseWriter, r *http.Request) {
 	err := tmplPost.Execute(w, nil)
 	if err != nil {
@@ -176,4 +186,14 @@ func newPostHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func HashPassword(password string) string {
+	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes)
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

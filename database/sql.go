@@ -249,7 +249,27 @@ func GetResponses(id string) []Reponse {
 	return res
 }
 
-func GetEmail(email string) {
+func GetUser(email string) User {
+	db := InitDatabase("forum.db")
+	defer db.Close()
+
+	query := "SELECT * FROM users WHERE email= '" + email + "';"
+	// rendu de la requête, recup info
+	result, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var user User
+	for result.Next() {
+		err := result.Scan(&user.Id, &user.Email, &user.Username, &user.Password)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return user
+}
+
+func GetEmail(email string) bool {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 
@@ -270,8 +290,11 @@ func GetEmail(email string) {
 		res = append(res, user)
 	}
 
-	fmt.Print(len(res))
-	fmt.Println()
+	if len(res) != 0 {
+		return true
+	} else {
+		return false
+	}
 	// return result
 }
 
