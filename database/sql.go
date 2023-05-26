@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"strconv"
 )
@@ -353,7 +352,7 @@ func GetSession(mail string) bool {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 
-	query := "SELECT * FROM sessions  WHERE email='" + mail +"';"
+	query := "SELECT * FROM sessions  WHERE email='" + mail + "';"
 	// rendu de la requête, recup info
 	result, err := db.Query(query)
 	if err != nil {
@@ -380,26 +379,26 @@ func GetSession(mail string) bool {
 }
 
 func DeleteSession(uuid string) {
-    db := InitDatabase("forum.db")
-    defer db.Close()
+	db := InitDatabase("forum.db")
+	defer db.Close()
 
-    query := "DELETE FROM sessions WHERE uuid = '" + uuid + "';"
-    // rendu de la requête, recup info
-    _, err := db.Exec(query)
-    if err != nil {
-        log.Fatal(err)
-    }
-    // var res []Session
-    // for result.Next() {
-    //     // debug console
-    //     var session Session
-    //     err := result.Scan(&session.Id, &session.Email, &session.Uuid)
-    //     if err != nil {
-    //         log.Fatal(err)
-    //     }
-    //     // %s = %v
-    //     res = append(res, session)
-    // }
+	query := "DELETE FROM sessions WHERE uuid = '" + uuid + "';"
+	// rendu de la requête, recup info
+	_, err := db.Exec(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// var res []Session
+	// for result.Next() {
+	//     // debug console
+	//     var session Session
+	//     err := result.Scan(&session.Id, &session.Email, &session.Uuid)
+	//     if err != nil {
+	//         log.Fatal(err)
+	//     }
+	//     // %s = %v
+	//     res = append(res, session)
+	// }
 }
 
 func SelectByAscending(filter string) []Post {
@@ -442,11 +441,11 @@ func SelectByDescending(filter string) []Post {
 	return res
 }
 
-func RecupNbr(data string,id string) int {
+func RecupNbr(data string, id string) int {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 
-	quer := "SELECT " + data + " FROM posts WHERE id=" + id +";"
+	quer := "SELECT " + data + " FROM posts WHERE id=" + id + ";"
 	resul, e := db.Query(quer)
 	if e != nil {
 		log.Fatal(e)
@@ -466,9 +465,9 @@ func UpdateNbr(data string, nbr int, id string) {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 	query := "UPDATE posts SET " + data + " = " + strconv.Itoa(nbr) + " WHERE id= " + id + ";"
-	result, err := db.Exec(query)
+	_, err := db.Exec(query)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Result update NBR : ", result)
+	// fmt.Println("Result update NBR : ", result)
 }

@@ -18,8 +18,13 @@ type PageHome struct {
 	Posts           []database.Post
 	IsConnecter     bool
 	ConnectUserInfo string
+	Error           int
 	Try             bool
 }
+
+// Error = 0 (Aucun problème) 
+// Error = 1 (Session deja ouverte)
+// Error = 2 (Problème de connection)
 
 type PagePost struct {
 	OnePost     database.Post
@@ -60,6 +65,8 @@ func initStruct() (PageHome, PagePost) {
 	var home PageHome
 	home.Posts = database.GetAllPost()
 	home.IsConnecter = false
+	home.Error = 0
+	home.ConnectUserInfo = ""
 
 	var post PagePost
 	post.IsConnecter = false
@@ -136,7 +143,7 @@ func homeTransiHandler(w http.ResponseWriter, r *http.Request) {
 			nbr := database.RecupNbr("nbrDislikes", idBu[0])
 			nbr += 1
 			database.UpdateNbr("nbrDislikes", nbr, idBu[0])
-			fmt.Println(idBu[0], "Dislike")
+			// fmt.Println(idBu[0], "Dislike")
 		}
 	}
 
@@ -184,28 +191,36 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	connectionMdp := r.FormValue("ConnectionMdp")
 	if connectionEmail != "" {
 		user := database.GetUser(connectionEmail)
-		if CheckPasswordHash(connectionMdp, user.Password) && user.Email == connectionEmail && database.GetSession(user.Email) {
-			// Generate a new session ID
-			sessionID := uuid.New().String()
-			// Set the session ID as a cookie with an expiration date
-			expiration := time.Now().Add(30 * time.Minute) // Session expires after 1 minute
-			cookie := &http.Cookie{
-				Name:     "Session",
-				Value:    sessionID,
-				Expires:  expiration,
-				HttpOnly: true,
+		if database.GetSession(user.Email){
+			if CheckPasswordHash(connectionMdp, user.Password) && user.Email == connectionEmail {
+				// Generate a new session ID
+				sessionID := uuid.New().String()
+				// Set the session ID as a cookie with an expiration date
+				expiration := time.Now().Add(30 * time.Minute) // Session expires after 1 minute
+				cookie := &http.Cookie{
+					Name:     "Session",
+					Value:    sessionID,
+					Expires:  expiration,
+					HttpOnly: true,
+				}
+				http.SetCookie(w, cookie)
+				database.DatabaseAndSession([]string{connectionEmail, sessionID})
+				HomeStruct.ConnectUserInfo = user.Username
+				HomeStruct.IsConnecter = true
+				HomeStruct.Error = 0
+				// fmt.Println(true)
+				// fmt.Println(cookie)
+			} else {
+				HomeStruct.ConnectUserInfo = ""
+				HomeStruct.IsConnecter = false
+				HomeStruct.Error = 2
 			}
-			http.SetCookie(w, cookie)
-			database.DatabaseAndSession([]string{connectionEmail, sessionID})
-			HomeStruct.ConnectUserInfo = user.Username
-			HomeStruct.IsConnecter = true
-			// fmt.Println(true)
-			// fmt.Println(cookie)
 		} else {
 			HomeStruct.ConnectUserInfo = ""
 			HomeStruct.IsConnecter = false
-			fmt.Println(false)
+			HomeStruct.Error = 1
 		}
+
 	}
 
 	// fmt.Println(HomeStruct.ConnectUserInfo, HomeStruct.IsConnecter)
@@ -220,6 +235,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		if !database.GetEmail(inscriptionEmail) {
 			database.DatabaseAndUsers([]string{inscriptionEmail, inscriptionName, HashPassword(inscriptionMdp)})
 		} else {
+			HomeStruct.Error = 3
 			fmt.Println("veuillez entrer une autre adresse mail. Celle-ci est déjà prise.")
 		}
 	}
@@ -228,18 +244,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
-	deconnexion := r.FormValue("Deconnexion")
-	fmt.Println(deconnexion)
 	// Remove the session from the server-side sessions map
 	sessionCookie, err := r.Cookie("Session")
-	fmt.Println(deconnexion)
 	if err == nil {
-		fmt.Println(deconnexion)
 		database.DeleteSession(sessionCookie.Value)
 	}
 	HomeStruct.ConnectUserInfo = ""
 	HomeStruct.IsConnecter = false
-	fmt.Println("Machin deconnecter")
 
 	// Clear the session cookie
 	cookie := &http.Cookie{
