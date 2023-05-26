@@ -22,7 +22,7 @@ type PageHome struct {
 	Try             bool
 }
 
-// Error = 0 (Aucun problème) 
+// Error = 0 (Aucun problème)
 // Error = 1 (Session deja ouverte)
 // Error = 2 (Problème de connection)
 
@@ -84,7 +84,7 @@ var HomeStruct, PostStruct = initStruct()
 func main() {
 
 	// ResetDB()
-	//database.GetSession("truc@truc.com");
+	// database.Database()
 
 	fmt.Printf("\n")
 	fmt.Println("http://localhost:8080/")
@@ -191,7 +191,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	connectionMdp := r.FormValue("ConnectionMdp")
 	if connectionEmail != "" {
 		user := database.GetUser(connectionEmail)
-		if database.GetSession(user.Email){
+		if database.GetSession(user.Email) {
 			if CheckPasswordHash(connectionMdp, user.Password) && user.Email == connectionEmail {
 				// Generate a new session ID
 				sessionID := uuid.New().String()
