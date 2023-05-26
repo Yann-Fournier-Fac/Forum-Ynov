@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
@@ -51,8 +52,8 @@ func ResetDB() {
 	database.DatabaseAndReponse([]string{strconv.Itoa(5), strconv.Itoa(9), "Moi aussi !!!!!"})
 	database.DatabaseAndReponse([]string{strconv.Itoa(5), strconv.Itoa(9), "Moi aussi !!!!!"})
 
-	database.DatabaseAndSession([]string{"aze"})
-	database.DatabaseAndSession([]string{"qsd"})
+	// database.DatabaseAndSession([]string{"yann@ynov.com", "truc"})
+	// database.DatabaseAndSession([]string{"elisa@ynov.com",  "machin"})
 }
 
 func initStruct() (PageHome, PagePost) {
@@ -76,14 +77,18 @@ var HomeStruct, PostStruct = initStruct()
 func main() {
 
 	// ResetDB()
+	//database.GetSession("truc@truc.com");
 
 	fmt.Printf("\n")
 	fmt.Println("http://localhost:8080/")
 	fmt.Printf("\n")
 
 	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/ho", homeTransiHandler) // fonction de transition
 	http.HandleFunc("/post", postHandler)
 	http.HandleFunc("/newpost", newPostHandler)
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/logout", logoutHandler)
 
 	// http.Handle("/assets/css/", http.StripPrefix("/assets/css/", http.FileServer(http.Dir("assets/css"))))
 	// http.Handle("/assets/images/", http.StripPrefix("/assets/images/", http.FileServer(http.Dir("assets/images"))))
@@ -112,6 +117,13 @@ func filter(HomeStruct *PageHome) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
+	err := tmplHome.Execute(w, HomeStruct)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func homeTransiHandler(w http.ResponseWriter, r *http.Request) {
 	buLikesDislikes := r.FormValue("bulike/dislike")
 	if buLikesDislikes != "" {
 		idBu := strings.Split(buLikesDislikes, ",")
@@ -128,34 +140,6 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Connection -----------------------------------------------------------------
-	connectionEmail := r.FormValue("ConnectionEmail")
-	connectionMdp := r.FormValue("ConnectionMdp")
-	if connectionEmail != "" {
-		user := database.GetUser(connectionEmail)
-		fmt.Println(uuid.NewRandom())
-		fmt.Print(user)
-		if CheckPasswordHash(connectionMdp, user.Password) && user.Email == connectionEmail {
-			fmt.Println(true)
-		} else {
-			fmt.Println(false)
-		}
-	}
-
-	// Inscription ----------------------------------------------------------------
-	inscriptionName := r.FormValue("InscriptionName")
-	inscriptionEmail := r.FormValue("InscriptionEmail")
-	inscriptionMdp := r.FormValue("InscriptionMdp")
-	fmt.Println(inscriptionName)
-
-	if inscriptionName != "" {
-		if !database.GetEmail(inscriptionEmail) {
-			database.DatabaseAndUsers([]string{inscriptionEmail, inscriptionName, HashPassword(inscriptionMdp)})
-		} else {
-			fmt.Println("veuillez entrer une autre adresse mail. Celle-ci est déjà prise.")
-		}
-	}
-
 	headerLinks := r.FormValue("link")
 	if headerLinks != "" {
 		truc = headerLinks
@@ -167,11 +151,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filter(&HomeStruct)
-
-	err := tmplHome.Execute(w, HomeStruct)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
@@ -196,4 +176,79 @@ func HashPassword(password string) string {
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	// Connection -----------------------------------------------------------------
+	connectionEmail := r.FormValue("ConnectionEmail")
+	connectionMdp := r.FormValue("ConnectionMdp")
+	if connectionEmail != "" {
+		user := database.GetUser(connectionEmail)
+		if CheckPasswordHash(connectionMdp, user.Password) && user.Email == connectionEmail && database.GetSession(user.Email) {
+			// Generate a new session ID
+			sessionID := uuid.New().String()
+			// Set the session ID as a cookie with an expiration date
+			expiration := time.Now().Add(30 * time.Minute) // Session expires after 1 minute
+			cookie := &http.Cookie{
+				Name:     "Session",
+				Value:    sessionID,
+				Expires:  expiration,
+				HttpOnly: true,
+			}
+			http.SetCookie(w, cookie)
+			database.DatabaseAndSession([]string{connectionEmail, sessionID})
+			HomeStruct.ConnectUserInfo = user.Username
+			HomeStruct.IsConnecter = true
+			// fmt.Println(true)
+			// fmt.Println(cookie)
+		} else {
+			HomeStruct.ConnectUserInfo = ""
+			HomeStruct.IsConnecter = false
+			fmt.Println(false)
+		}
+	}
+
+	// fmt.Println(HomeStruct.ConnectUserInfo, HomeStruct.IsConnecter)
+
+	// Inscription ----------------------------------------------------------------
+	inscriptionName := r.FormValue("InscriptionName")
+	inscriptionEmail := r.FormValue("InscriptionEmail")
+	inscriptionMdp := r.FormValue("InscriptionMdp")
+	fmt.Println(inscriptionName)
+
+	if inscriptionName != "" {
+		if !database.GetEmail(inscriptionEmail) {
+			database.DatabaseAndUsers([]string{inscriptionEmail, inscriptionName, HashPassword(inscriptionMdp)})
+		} else {
+			fmt.Println("veuillez entrer une autre adresse mail. Celle-ci est déjà prise.")
+		}
+	}
+
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	deconnexion := r.FormValue("Deconnexion")
+	fmt.Println(deconnexion)
+	// Remove the session from the server-side sessions map
+	sessionCookie, err := r.Cookie("Session")
+	fmt.Println(deconnexion)
+	if err == nil {
+		fmt.Println(deconnexion)
+		database.DeleteSession(sessionCookie.Value)
+	}
+	HomeStruct.ConnectUserInfo = ""
+	HomeStruct.IsConnecter = false
+	fmt.Println("Machin deconnecter")
+
+	// Clear the session cookie
+	cookie := &http.Cookie{
+		Name:    "session",
+		Value:   "",
+		Expires: time.Now().Add(-time.Hour),
+	}
+	http.SetCookie(w, cookie)
+
+	// Redirect to the login page after logging out
+	http.Redirect(w, r, "/", http.StatusFound)
 }

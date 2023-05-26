@@ -28,5 +28,6 @@ type Post struct {
 
 type Session struct {
 	Id   int64
+	Email string
 	Uuid string
 }

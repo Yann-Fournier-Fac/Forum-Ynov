@@ -43,7 +43,8 @@ func Database() {
 
 	CREATE TABLE IF NOT EXISTS sessions (
 		id INTEGER NOT NULL,
-		uuid INTEGER NOT NULL,
+		email TEXT NOT NULL,
+		uuid TEXT NOT NULL,
 		PRIMARY KEY (id)
 	);
 		`
@@ -102,7 +103,7 @@ func DatabaseAndSession(values []string) {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 	sqlStmtInsertPosts := `
-		INSERT INTO sessions (uuid) VALUES (?);
+		INSERT INTO sessions (email, uuid) VALUES (?, ?);
 		`
 	// TODO remplacer par valeurs ?
 	InsertIntoRow(db, values, sqlStmtInsertPosts)
@@ -348,11 +349,11 @@ func GetTagSerie() []Post {
 	return res
 }
 
-func GetSession(id string) {
+func GetSession(mail string) bool {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 
-	query := "SELECT * FROM sessions WHERE id = '" + id + "';" //WHERE users.email='" + mail +"';"
+	query := "SELECT * FROM sessions  WHERE email='" + mail +"';"
 	// rendu de la requête, recup info
 	result, err := db.Query(query)
 	if err != nil {
@@ -363,7 +364,7 @@ func GetSession(id string) {
 	for result.Next() {
 		// debug console
 		var session Session
-		err := result.Scan(&session.Id, &session.Uuid)
+		err := result.Scan(&session.Id, &session.Email, &session.Uuid)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -371,9 +372,34 @@ func GetSession(id string) {
 		res = append(res, session)
 	}
 
-	fmt.Print(len(res))
-	fmt.Println()
-	// return result
+	if len(res) != 0 {
+		return false
+	} else {
+		return true
+	}
+}
+
+func DeleteSession(uuid string) {
+    db := InitDatabase("forum.db")
+    defer db.Close()
+
+    query := "DELETE FROM sessions WHERE uuid = '" + uuid + "';"
+    // rendu de la requête, recup info
+    _, err := db.Exec(query)
+    if err != nil {
+        log.Fatal(err)
+    }
+    // var res []Session
+    // for result.Next() {
+    //     // debug console
+    //     var session Session
+    //     err := result.Scan(&session.Id, &session.Email, &session.Uuid)
+    //     if err != nil {
+    //         log.Fatal(err)
+    //     }
+    //     // %s = %v
+    //     res = append(res, session)
+    // }
 }
 
 func SelectByAscending(filter string) []Post {
