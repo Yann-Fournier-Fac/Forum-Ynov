@@ -234,6 +234,21 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if inscriptionName != "" {
 		if !database.GetEmail(inscriptionEmail) {
 			database.DatabaseAndUsers([]string{inscriptionEmail, inscriptionName, HashPassword(inscriptionMdp)})
+			// Generate a new session ID
+			sessionID := uuid.New().String()
+			// Set the session ID as a cookie with an expiration date
+			expiration := time.Now().Add(30 * time.Minute) // Session expires after 1 minute
+			cookie := &http.Cookie{
+				Name:     "Session",
+				Value:    sessionID,
+				Expires:  expiration,
+				HttpOnly: true,
+			}
+			http.SetCookie(w, cookie)
+			database.DatabaseAndSession([]string{inscriptionEmail, sessionID})
+			HomeStruct.ConnectUserInfo = inscriptionName
+			HomeStruct.IsConnecter = true
+			HomeStruct.Error = 0
 		} else {
 			HomeStruct.Error = 3
 			fmt.Println("veuillez entrer une autre adresse mail. Celle-ci est déjà prise.")
