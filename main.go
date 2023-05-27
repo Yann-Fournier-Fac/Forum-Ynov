@@ -27,9 +27,10 @@ type PageHome struct {
 // Error = 2 (Problème de connection)
 
 type PagePost struct {
-	OnePost     database.Post
-	Responses   []database.Reponse
-	IsConnecter bool
+	OnePost         database.Post
+	Responses       []database.Reponse
+	ConnectUserName string
+	ConnectUserImg  string
 }
 
 func ResetDB() {
@@ -41,22 +42,21 @@ func ResetDB() {
 	database.DatabaseAndUsers([]string{"liliane@ynov.com", "Liliane", HashPassword("liliane")})
 	database.DatabaseAndUsers([]string{"joshua@ynov.com", "Joshua", HashPassword("joshua")})
 
-	database.DatabaseAndPost([]string{strconv.Itoa(1), "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), strconv.Itoa(0), strconv.Itoa(0)})
-	database.DatabaseAndPost([]string{strconv.Itoa(1), "serie", "Second Post", "Moi j'adore GOT", strconv.Itoa(2), strconv.Itoa(33)})
-	database.DatabaseAndPost([]string{strconv.Itoa(2), "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3)})
-	database.DatabaseAndPost([]string{strconv.Itoa(2), "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33)})
-	database.DatabaseAndPost([]string{strconv.Itoa(3), "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3)})
-	database.DatabaseAndPost([]string{strconv.Itoa(3), "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33)})
-	database.DatabaseAndPost([]string{strconv.Itoa(4), "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3)})
-	database.DatabaseAndPost([]string{strconv.Itoa(4), "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33)})
-	database.DatabaseAndPost([]string{strconv.Itoa(5), "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3)})
-	database.DatabaseAndPost([]string{strconv.Itoa(5), "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33)})
+	database.DatabaseAndPost([]string{"Yann", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023"})
+	database.DatabaseAndPost([]string{"Yann", "serie", "Second Post", "Moi j'adore GOT", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023"})
+	database.DatabaseAndPost([]string{"Elisa", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023"})
+	database.DatabaseAndPost([]string{"Elisa", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023"})
+	database.DatabaseAndPost([]string{"Kevin", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023"})
+	database.DatabaseAndPost([]string{"Kevin", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023"})
+	database.DatabaseAndPost([]string{"Liliane", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023"})
+	database.DatabaseAndPost([]string{"Liliane", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023"})
+	database.DatabaseAndPost([]string{"Joshua", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023"})
+	database.DatabaseAndPost([]string{"Joshua", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023"})
 
-	database.DatabaseAndReponse([]string{strconv.Itoa(5), strconv.Itoa(9), "Moi aussi !!!!!"})
-	database.DatabaseAndReponse([]string{strconv.Itoa(5), strconv.Itoa(9), "Moi aussi !!!!!"})
-	database.DatabaseAndReponse([]string{strconv.Itoa(5), strconv.Itoa(9), "Moi aussi !!!!!"})
-	database.DatabaseAndReponse([]string{strconv.Itoa(5), strconv.Itoa(9), "Moi aussi !!!!!"})
-
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Yann", "Moi aussi !!!!!", transformDate()})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Elisa", "Moi aussi !!!!!", transformDate()})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Kevin", "Moi aussi !!!!!", transformDate()})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Liliane", "Moi aussi !!!!!", transformDate()})
 	// database.DatabaseAndSession([]string{"yann@ynov.com", "truc"})
 	// database.DatabaseAndSession([]string{"elisa@ynov.com",  "machin"})
 }
@@ -69,7 +69,8 @@ func initStruct() (PageHome, PagePost) {
 	home.ConnectUserInfo = ""
 
 	var post PagePost
-	post.IsConnecter = false
+	post.ConnectUserName = ""
+	post.ConnectUserImg = ""
 
 	return home, post
 }
@@ -94,6 +95,7 @@ func main() {
 	http.HandleFunc("/ho", homeTransiHandler) // fonction de transition
 	http.HandleFunc("/post", postHandler)
 	http.HandleFunc("/newpost", newPostHandler)
+	http.HandleFunc("/newpostTransi", newPostTransiHandler)
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/logout", logoutHandler)
 
@@ -103,22 +105,22 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-var truc = "home"
+var filtres = "home"
 
 func filter(HomeStruct *PageHome) {
-	if truc == "home" {
+	if filtres == "home" {
 		HomeStruct.Posts = database.GetAllPost()
-	} else if truc == "films" {
+	} else if filtres == "films" {
 		HomeStruct.Posts = database.GetTagFilm()
-	} else if truc == "series" {
+	} else if filtres == "series" {
 		HomeStruct.Posts = database.GetTagSerie()
-	} else if truc == "Plikes" {
+	} else if filtres == "Plikes" {
 		HomeStruct.Posts = database.SelectByDescending("nbrLikes")
-	} else if truc == "Pdislikes" {
+	} else if filtres == "Pdislikes" {
 		HomeStruct.Posts = database.SelectByDescending("NbrDislikes")
-	} else if truc == "Mlikes" {
+	} else if filtres == "Mlikes" {
 		HomeStruct.Posts = database.SelectByAscending("nbrLikes")
-	} else if truc == "Mdislikes" {
+	} else if filtres == "Mdislikes" {
 		HomeStruct.Posts = database.SelectByAscending("NbrDislikes")
 	}
 }
@@ -149,12 +151,17 @@ func homeTransiHandler(w http.ResponseWriter, r *http.Request) {
 
 	headerLinks := r.FormValue("link")
 	if headerLinks != "" {
-		truc = headerLinks
+		filtres = headerLinks
 	}
 
 	BuMenuDeroulant := r.FormValue("BuMenuDeroulant")
 	if BuMenuDeroulant != "" {
-		truc = BuMenuDeroulant
+		filtres = BuMenuDeroulant
+	}
+
+	trucs := r.FormValue("creerPost")
+	if trucs != "" {
+		fmt.Println(trucs)
 	}
 
 	filter(&HomeStruct)
@@ -162,7 +169,10 @@ func homeTransiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
-	err := tmplPost.Execute(w, nil)
+	idPost := r.FormValue("buPost")
+	PostStruct.OnePost = database.GetOnePost(idPost)
+	PostStruct.Responses = database.GetResponses(idPost)
+	err := tmplPost.Execute(w, PostStruct)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -175,14 +185,17 @@ func newPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func HashPassword(password string) string {
-	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes)
-}
-
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+func newPostTransiHandler(w http.ResponseWriter, r *http.Request) {
+	buton := r.FormValue("buCreerPost")
+	if buton == "creer" {
+		titre := r.FormValue("topic-name")
+		tag := r.FormValue("category")
+		description := r.FormValue("content")
+		database.DatabaseAndPost([]string{HomeStruct.ConnectUserInfo, tag, titre, description, strconv.Itoa(0), strconv.Itoa(0), transformDate()})
+	}
+	filtres = "home"
+	filter(&HomeStruct)
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -208,17 +221,24 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 				HomeStruct.ConnectUserInfo = user.Username
 				HomeStruct.IsConnecter = true
 				HomeStruct.Error = 0
-				// fmt.Println(true)
-				// fmt.Println(cookie)
+
+				PostStruct.ConnectUserName = user.Username
+				// PostStruct.ConnectUserImg = user.Img
 			} else {
 				HomeStruct.ConnectUserInfo = ""
 				HomeStruct.IsConnecter = false
 				HomeStruct.Error = 2
+
+				PostStruct.ConnectUserName = ""
+				// PostStruct.ConnectUserImg = ""
 			}
 		} else {
 			HomeStruct.ConnectUserInfo = ""
 			HomeStruct.IsConnecter = false
 			HomeStruct.Error = 1
+
+			PostStruct.ConnectUserName = ""
+			// PostStruct.ConnectUserImg = ""
 		}
 
 	}
@@ -277,4 +297,45 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect to the login page after logging out
 	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+// Utilitaires *************************************************************************************************************************
+
+func HashPassword(password string) string {
+	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes)
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+func transformDate() string {
+	Mois := []string{"", "Janvier ", "Février ", "Mars ", "Avril ", "Mai ", "Juin ", "Juillet ", "Août ", "Septembre ", "Octobre ", "Novembre ", "Décembre "}
+	currentTime := time.Now()
+	dateString := currentTime.Format("2006-01-02 ")
+	data := strings.Split(dateString, "-")
+	dateFinale := ""
+	for i := 0; i < len(data); i++ {
+		if i == 1 {
+			if data[i][0] == 0 {
+				dateFinale = Mois[int(data[i][0])] + dateFinale
+			} else {
+				indMois, _ := strconv.Atoi(data[i])
+				dateFinale = Mois[indMois] + dateFinale
+			}
+		} else if i == 2 {
+			if data[i][0] == 0 {
+				dateFinale = string(data[i][1]) + dateFinale
+			} else {
+				dateFinale = data[i] + dateFinale
+			}
+		} else {
+			dateFinale = data[i] + dateFinale
+		}
+		dateFinale = dateFinale + " "
+	}
+	// fmt.Println(dateFinale)
+	return dateFinale
 }

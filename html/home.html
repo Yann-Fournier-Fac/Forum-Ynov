@@ -503,6 +503,8 @@
         }
 
         .post__subject .subject_title{
+            display: flex;
+            flex-direction: row;
             color: #fff;
         }
         .post__subject .subject_title span{
@@ -665,12 +667,17 @@
                 {{range .Posts}}
                     <div class="post__subject" id="post-{{.Id}}">
                         <div class="left__subject">
-                            <p class="subject_title">
-                                <a href="">{{.Titre}}</a> <span>#{{.Tag}}</span>
-                            </p>
-                            <p style="color: #fff;margin: 5px;;">{{.Description}}</p>
+                            <div class="subject_title">
+                                <form action="/post" method="post">
+                                    <button style="color: rgb(128, 0, 128);border-style: none; background-color: rgba(255, 0, 25, 0); text-decoration: underline; font-size: 17px; margin-right: 10px;" name="buPost" value="{{.Id}}">
+                                        {{.Titre}}
+                                    </button>
+                                </form>
+                                <span>#{{.Tag}}</span>
+                            </div>
+                            <p style="color: #fff;margin: 5px;">{{.Description}}</p>
                             <p class="subject__description">
-                                Par <span>Author</span>
+                                Par <span>{{.UserName}}</span> le <span>{{.Date}}</span>
                             </p>
                         </div>
                         <div class="right__subject">
@@ -691,12 +698,15 @@
                 {{range .Posts}}
                     <div class="post__subject" id="post-{{.Id}}">
                         <div class="left__subject">
-                            <p class="subject_title">
-                                <a href="">{{.Titre}}</a> <span>#{{.Tag}}</span>
-                            </p>
+                            <div class="subject_title">
+                                    <button style="color: rgb(128, 0, 128);border-style: none; background-color: rgba(255, 0, 25, 0); text-decoration: underline; font-size: 17px; margin-right: 10px;" name="buPost" value="{{.Id}}">
+                                        {{.Titre}}
+                                    </button>
+                                <span>#{{.Tag}}</span>
+                            </div>
                             <p style="color: #fff;margin: 5px;;">{{.Description}}</p>
                             <p class="subject__description">
-                                Par <span>Author</span>
+                                Par <span>{{.UserName}}</span> le <span>{{.Date}}</span>
                             </p>
                         </div>
                         <div class="right__subject">

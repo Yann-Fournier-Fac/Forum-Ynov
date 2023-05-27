@@ -7,7 +7,10 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet">
 
     <!-- ================= CSS ================= -->
-    <!-- <link rel="stylesheet" href="../assets/css/newtopic.css"> -->
+    <!-- <link rel="stylesheet" href="../assets/css/newpost.css"> -->
+
+    <title>Welcome to you</title>
+
     <style>
         *{
             margin: 0;
@@ -16,12 +19,17 @@
             font-family: 'Poppins', sans-serif;
         }
 
+        a{
+            text-decoration: none;
+            color: white;
+        }
+
         body{
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            /*background: url(5s.jpg);*/
+            /* background: url(../images/5.jpg); */
             background-color: #162938;
             background-size: cover;
             background-position: center;
@@ -33,13 +41,14 @@
             top: 0;
             left: 0;
             width: 100%;
-            padding: 20px 100px;
+            padding: 20px 50px;
             display: flex;
             justify-content: space-between;
             flex-direction: row;
             align-items: center;
             z-index: 99;
             /* overflow: hidden; */
+            backdrop-filter: blur(20px);
         }
 
         .logo{
@@ -110,7 +119,7 @@
             position: relative;
             display: inline-block;
         }
-
+        
         /* Dropdown Content (Hidden by Default) */
         .dropdown-content {
             display: none;
@@ -122,7 +131,7 @@
             box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
         }
-
+        
         /* Links inside the dropdown */
         .dropdown-content a {
             color: #fff;
@@ -132,12 +141,12 @@
             backdrop-filter: blur(10px);
             font-size: 1rem;
         }
-
+        
         /* Change color of dropdown links on hover */
         .dropdown-content a:hover {
             background-color: rgba(241, 241, 241, 0.6);
         }
-
+        
         /* Show the dropdown menu on hover */
         .dropdown:hover .dropdown-content {
             display: block;
@@ -154,7 +163,7 @@
             font-size: 1.1rem;
             color: #fff;
             font-weight: 500;
-            margin-left: 40px;
+            margin-left: 10px;
             padding: .2rem .5rem;
             transition: .5s;
         }
@@ -167,6 +176,96 @@
             display: inline-block;
         }
 
+        /* =============== SEARCH =============== */
+        /* .container{
+            height: auto;
+            margin-inline: 1.5rem;
+            display: inline-block;
+            display: grid;
+            place-items: center;
+        }
+
+        .search{
+            position: relative;
+            width: 50px;
+            height: 50px;
+            background-color: #fff;
+            box-shadow: 0 4px 24px hsla(222, 68%, 12%, .1);
+            border-radius: 4rem;
+            padding: 10px;
+            overflow: hidden;
+            transition: width .5s cubic-bezier(.9, 0, .3, .9);
+        }
+
+        .search__input{
+            background-color: var(--body-color);
+            border: none;
+            outline: none;
+            width: calc(100% - 64px);
+            height: 100%;
+            border-radius: 4rem;
+            padding-left: 14px;
+            font-family: var(--body-font);
+            font-size: var(--small-font-size);
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s;
+        }
+
+        .search__input:-webkit-autofill{
+            box-shadow: 0 0 0 100px var(--white-color) inset;
+        }
+
+        .search__button{
+            width: 3.125rem; /* soit 56 px 
+            height: 3.125rem; /* soit 56 px 
+            background-color: var(--dark-color);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: transform .6s cubic-bezier(.9, 0, .3, .9);
+        }
+
+        .search__icon,
+        .search__close{
+            color: var(--white-color);
+            font-size: 1.5rem;
+            position: absolute;
+            transition: opacity .5s cubic-bezier(.9, 0, .3, .9);
+        }
+
+        .search__close{
+            opacity: 0;
+        }
+
+        /* Search animated 
+        .show-search{
+            width: 100%;
+        } 
+
+        .show-search .search__input{
+            opacity: 1;
+            pointer-events: initial;
+        }
+
+        .show-search .search__button{
+            transform: rotate(90deg);
+        }
+
+        .show-search .search__icon{
+            opacity: 0;
+        }
+
+        .show-search .search__close {
+            opacity: 1;
+        } */
         /* =============== CONNEXION FORM =============== */
         .wrapper{
             position: absolute;
@@ -319,6 +418,110 @@
         .login-register p a{
             text-decoration: underline;
         }
+        /*=============== BREAKPOINTS ===============*/
+        /* For medium devices */
+
+        /* ============= MAIN PAGE ============= */
+
+        /* ============= TOP POST WINDOW ============= */
+        .global__container{
+            width: 800px;
+            height: auto;
+            background: transparent;
+            backdrop-filter: blur(30px);
+            border-radius: 15px;
+            overflow: hidden;
+            padding-bottom: 1rem;
+        }
+        .global__container p{
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .global__container .header-post__container{
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px solid rgba(100, 100, 200, 1);
+            background: rgba(255, 255, 255, .7);
+        }
+
+        .global__container .header-post__container p{
+            font-size: 2rem;
+            font-weight: 600;
+            padding: 0 .5rem;
+            margin-left: 1rem;
+            color: rgba(40, 40, 40, 1);
+        }
+
+        .global__container .header-post__container .new__subject{
+            height: 30px;
+            margin-top: auto;
+            margin-bottom: auto;
+            margin-right: 1rem;
+            padding: 0.2rem 0.5rem;
+            color: #fff;
+            background-color: #162938;
+            border-radius: 5px;
+            border: none;
+            transition: .5s;
+        }
+
+        .global__container .header-post__container .new__subject:hover{
+            background-color: rgba(22, 41, 56, .9);
+            cursor: pointer;
+        }
+
+        /* ============= TOPIC LIST ============= */
+
+        .post__subject{
+            margin-left: .5rem;
+            margin-right: .5rem;
+            padding-left: 1rem;
+            margin-top: .3rem;
+            border-bottom: 3px solid rgba(255, 255, 255, .3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post__subject .subject_title{
+            color: #fff;
+        }
+        .post__subject .subject_title span{
+            color: rgba(255, 0, 25, 1);
+        }
+
+        .post__list .post__subject .subject__description{
+            color: rgba(180, 180, 180, 1);
+            font-size: .8rem;
+            margin-bottom: .5rem;
+        }
+        .post__list .post__subject .subject__description span{
+            color: #fff;
+        }
+
+        .right__subject form{
+            display: flex;
+            gap: 1rem;
+            width: 60px;
+            flex-direction: row;
+        }
+        .right__subject form button{
+            width: 100%;
+            height: 100%;
+            background: none;
+            border: none;
+        }
+
+        .right__subject form button:hover{
+            cursor: pointer;
+        }
+
+
+
+
+
         /* ============= NEW TOPIC ============= */
 
         .subject__content{
@@ -377,120 +580,86 @@
             background-color: rgba(22, 41, 56, .9);
             cursor: pointer;
         }
-    </style>
 
-    <title>Welcome to you</title>
+
+
+        /* ============= TOPIC ============= */
+
+        .header-post__container .user__details{
+            display: flex;
+        }
+        .header-post__container .user__details .user__details-text{
+            display: flex;
+            flex-direction: column;
+        }
+        .header-post__container .user__details .user__details-text .user__name{
+            display: flex;
+        }
+        .header-post__container .user__details .user__details-text h3{
+            font-size: 1rem;
+        }
+        .header-post__container .user__details .user__details-text p{
+            font-size: .7rem;
+        }
+
+        .header-post__container .user__details img{
+            object-fit: contain;
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 50%;
+            padding: .2rem .4rem;
+        }
+
+        .topic__content{
+            height: 400px;
+            background: rgba(255, 255, 255, .7);
+            display: flex;
+            flex-direction: column;
+            padding-top: 1rem;
+        }
+    </style>
 </head>
 <body>
     <header>
         <h1 class="logo">FORUM</h2>
         <nav class="navbar">
-            <a href="#" class="nav__links">Home</a>
-            <a href="#" class="nav__links">Posts</a>
-            <a href="#" class="nav__links">Films</a>
-            <a href="#" class="nav__links">Séries</a>
-            <div class="filter dropdown">
-                <i class="ri-filter-line"></i>
-                <i class="ri-arrow-drop-down-fill"></i>
-                <div class="dropdown-content">
-                    <a href="#">Les plus récents</a>
-                    <a href="#">Les plus anciens</a>
-                    <a href="#">Les plus likés</a>
-                    <a href="#">Les moins likés</a>
-                </div>          
-            </div>
-                <div class="buttons-navbar">
-                    <button class="button__login-popup">Se connecter / S'inscrire</button>
-                </div>
+                <form action="/logout" method="post">
+                    <button name="Deconnexion" value="Deconnexion">Deconnexion</button>
+                </form>
             </nav>
     </header>
-
-    <div class="wrapper">
-        <i class="ri-close-line"></i>
-        <div class="form-box login">
-            <h2>Connectez-vous</h2>
-            <form action="#">
-                <div class="input-box">
-                    <i class="ri-mail-line icon"></i>
-                    <input type="email" required>
-                    <label>Email</label>
-                </div>
-                <div class="input-box">
-                    <i class="ri-lock-line icon"></i>
-                    <input type="password" required>
-                    <label>Mot de passe</label>
-                </div>
-                <button type="submit" class="form-box-button">Login</button>
-
-                <div class="login-register">
-                    <p>Vous n'avez pas de compte ?<br>
-                    <a href="#" class="register-link">Inscrivez-vous içi</a>
-                    </p>
-                </div>
-            </form>
-        </div>
-
-        <div class="form-box register">
-            <h2>Inscrivez-vous</h2>
-            <form action="#">
-                <div class="input-box">
-                    <i class="ri-user-fill icon"></i>
-                    <input type="text" required>
-                    <label>Nom d'utilisateur</label>
-                </div>
-                <div class="input-box">
-                    <i class="ri-mail-line icon"></i>
-                    <input type="email" required>
-                    <label>Email</label>
-                </div>
-                <div class="input-box">
-                    <i class="ri-lock-line icon"></i>
-                    <input type="password" required>
-                    <label>Mot de passe</label>
-                </div>
-                <button type="submit" class="form-box-button">Inscription</button>
-
-                <div class="login-register">
-                    <p>Vous avez un compte ?<br>
-                    <a href="#" class="login-link">Connectez-vous içi</a>
-                    </p>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <main class="global__container">
         <div class="header-post__container">
             <p>Nouveau topic</p>
-                <button class="new__subject" formaction="/">
-                    <i class="ri-add-line"></i>
-                    Retourner aux topics
-                </button>
+            <button class="new__subject">
+                <i class="ri-arrow-left-line"></i>
+                <a href="/">Retourner aux topics</a>
+            </button>
         </div>
 
         <div class="subject__content">
-            <form action="">
+            <form action="/newpostTransi">
                 <p>Titre</p>
-                <input type="text" name="topic-name" id="topic" placeholder="Titre du topic">
+                <input type="text" required name="topic-name" id="topic" placeholder="Titre du topic">
                 <p>Catégorie</p>
-                <select name="category" id="category">
-                    <option value="films">Films</option>
-                    <option value="series">Séries</option>
-                    <option value="autres">Autres</option>
+                <select name="category" required id="category">
+                    <option value="film">film</option>
+                    <option value="serie">serie</option>
                 </select>
                 <p>Description</p>
-                <textarea name="content" id="content" cols="30" rows="10" placeholder="Écrivez votre sujet içi"></textarea>
+                <textarea name="content" required id="content" cols="30" rows="10" placeholder="Écrivez votre sujet içi"></textarea>
 
                 <div class="subject__buttons">
-                    <button>Annuler</button>
-                    <button>Créer le topic</button>
+                    <!-- <button name="buCreerPost" value="annuler">Annuler</button> -->
+                    <button name="buCreerPost" value="creer">Créer le topic</button>
                 </div>
             </form>
         </div>
     </main>
 
     <!-- ================= SCRIPTS ================= -->
-    <!-- <script src="../assets/js/main.js"></script> -->
+    <script src="../assets/js/main.js"></script>
     <!-- <script src="search.js"></script> -->
 </body>
 </html>

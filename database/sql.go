@@ -20,24 +20,23 @@ func Database() {
 
 	CREATE TABLE IF NOT EXISTS reponses (
 		id INTEGER NOT NULL,
-		idUser INTEGER NOT NULL,
-		idPost INTEGER NOT NULL,  
+		idPost INTEGER NOT NULL,
+		userName TEXT NOT NULL,
 		contenu TEXT NOT NULL,
-		PRIMARY KEY (id), 
-		FOREIGN KEY (idUser) REFERENCES users(id),
-		FOREIGN KEY (idPost) REFERENCES posts(id)
+		date TEXT NOT NULL,
+		PRIMARY KEY (id)
 	);
 
 	CREATE TABLE IF NOT EXISTS posts (
 		id INTEGER NOT NULL,
-		idUser INTEGER NOT NULL,
+		userName Text NOT NULL,
 		tag TEXT NOT NULL,
 		titre TEXT NOT NULL,
 		description TEXT NOT NULL,
 		nbrLikes INTEGER,
 		nbrDislikes INTEGER,
-		PRIMARY KEY (id),
-		FOREIGN KEY (idUser) REFERENCES users(id)
+		date TEXT NOT NULL,
+		PRIMARY KEY (id)
 	);
 
 	CREATE TABLE IF NOT EXISTS sessions (
@@ -75,7 +74,7 @@ func DatabaseAndReponse(values []string) {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 	sqlStmtInsertReponses := `
-		INSERT INTO reponses (idUser, idPost, contenu) VALUES (?, ?, ?);
+		INSERT INTO reponses (idPost, userName,contenu, date) VALUES (?, ?, ?, ?);
 		`
 	InsertIntoRow(db, values, sqlStmtInsertReponses)
 	// rowsReponse := selectAllFrom(databaseAll, "reponses")
@@ -86,7 +85,7 @@ func DatabaseAndPost(values []string) {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 	sqlStmtInsertPosts := `
-		INSERT INTO posts (idUser, tag, titre, description, nbrLikes, nbrDislikes) VALUES (?, ?, ?, ?, ?, ?);
+		INSERT INTO posts (userName, tag, titre, description, nbrLikes, nbrDislikes, date) VALUES (?, ?, ?, ?, ?, ?, ?);
 		`
 	// TODO remplacer par valeurs ?
 	InsertIntoRow(db, values, sqlStmtInsertPosts)
@@ -196,7 +195,7 @@ func GetAllPost() []Post {
 	for result.Next() {
 		// debug console
 		var post Post
-		err := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -217,11 +216,12 @@ func GetOnePost(id string) Post {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	var post Post
-	err2 := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
-	if err2 != nil {
-		log.Fatal(err)
+	for result.Next() {
+		err2 := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
+		if err2 != nil {
+			log.Fatal(err)
+		}
 	}
 	return post
 }
@@ -240,7 +240,7 @@ func GetResponses(id string) []Reponse {
 	var res []Reponse
 	for result.Next() {
 		var reponse Reponse
-		err := result.Scan(&reponse.Id, &reponse.IdUser, &reponse.IdPost, &reponse.Contenu)
+		err := result.Scan(&reponse.Id, &reponse.IdPost, &reponse.UserName, &reponse.Contenu, &reponse.Date)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -312,7 +312,7 @@ func GetTagFilm() []Post {
 	for result.Next() {
 		// debug console
 		var post Post
-		err := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -337,7 +337,7 @@ func GetTagSerie() []Post {
 	for result.Next() {
 		// debug console
 		var post Post
-		err := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -412,7 +412,7 @@ func SelectByAscending(filter string) []Post {
 	var res []Post
 	for result.Next() {
 		var post Post
-		err := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -432,7 +432,7 @@ func SelectByDescending(filter string) []Post {
 	var res []Post
 	for result.Next() {
 		var post Post
-		err := result.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
+		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
 		if err != nil {
 			log.Fatal(err)
 		}
