@@ -15,7 +15,8 @@ func Database() {
 		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
 		email TEXT NOT NULL, 
 		username TEXT NOT NULL, 
-		password TEXT NOT NULL
+		password TEXT NOT NULL,
+		img TEXT NOT NULL
 	);
 
 	CREATE TABLE IF NOT EXISTS reponses (
@@ -24,6 +25,7 @@ func Database() {
 		userName TEXT NOT NULL,
 		contenu TEXT NOT NULL,
 		date TEXT NOT NULL,
+		img TEXT NOT NULL,
 		PRIMARY KEY (id)
 	);
 
@@ -36,6 +38,7 @@ func Database() {
 		nbrLikes INTEGER,
 		nbrDislikes INTEGER,
 		date TEXT NOT NULL,
+		img TEXT NOT NULL,
 		PRIMARY KEY (id)
 	);
 
@@ -62,7 +65,7 @@ func DatabaseAndUsers(values []string) {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 	sqlStmtInsertUsers := `
-		INSERT INTO users (email, username, password) VALUES (?, ?, ?);
+		INSERT INTO users (email, username, password, img) VALUES (?, ?, ?, ?);
 		`
 	// TODO remplacer par les valeurs get du web
 	InsertIntoRow(db, values, sqlStmtInsertUsers)
@@ -74,7 +77,7 @@ func DatabaseAndReponse(values []string) {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 	sqlStmtInsertReponses := `
-		INSERT INTO reponses (idPost, userName,contenu, date) VALUES (?, ?, ?, ?);
+		INSERT INTO reponses (idPost, userName,contenu, date, img) VALUES (?, ?, ?, ?, ?);
 		`
 	InsertIntoRow(db, values, sqlStmtInsertReponses)
 	// rowsReponse := selectAllFrom(databaseAll, "reponses")
@@ -85,16 +88,10 @@ func DatabaseAndPost(values []string) {
 	db := InitDatabase("forum.db")
 	defer db.Close()
 	sqlStmtInsertPosts := `
-		INSERT INTO posts (userName, tag, titre, description, nbrLikes, nbrDislikes, date) VALUES (?, ?, ?, ?, ?, ?, ?);
+		INSERT INTO posts (userName, tag, titre, description, nbrLikes, nbrDislikes, date, img) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 		`
 	// TODO remplacer par valeurs ?
 	InsertIntoRow(db, values, sqlStmtInsertPosts)
-	// Toutes les fonctions possibles ( telles ou telles s'activent avec des if relier au boutons )
-	// rowsPost := selectAllFrom(databaseAll, "posts")
-	// rowsPost = selectByAscending(databaseAll, "posts", "nbrLikes")
-	// rowsPost = selectByDescending(databaseAll, "posts", "nbrLikes")
-	// rowsPost = updateNbr(databaseAll, "posts", "nbrLikes", 3) // 3 à remplacer par la valeur javascript du site ( doit actuellement être en int )
-	// displayPostRow(rowsPost)
 }
 
 func DatabaseAndSession(values []string) {
@@ -129,57 +126,6 @@ func InsertIntoRow(db *sql.DB, values []string, stmt string) (int64, error) {
 	return row.LastInsertId()
 }
 
-// func DisplayUserRow(rows *sql.Rows) {
-// 	// tableau d'objet, à tester si ça ira
-// 	var htmlTable []User
-// 	for rows.Next() {
-// 		// debug console
-// 		var user User
-// 		err := rows.Scan(&user.Id, &user.Email, &user.Username, &user.Password)
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		// %s = %v
-// 		htmlTable = append(htmlTable, user)
-// 	}
-// 	fmt.Printf("web user : %v ", htmlTable)
-// 	fmt.Println()
-// }
-
-// func DisplayReponseRow(rows *sql.Rows) {
-// 	// tableau d'objet, à tester si ça ira
-// 	var htmlTable []Reponse
-// 	for rows.Next() {
-// 		// debug console
-// 		var reponse Reponse
-// 		err := rows.Scan(&reponse.Id, &reponse.IdUser, &reponse.IdPost, &reponse.Contenu)
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		// %s = %v
-// 		htmlTable = append(htmlTable, reponse)
-// 	}
-// 	fmt.Printf("web reponse : %v ", htmlTable)
-// 	fmt.Println()
-// }
-
-// func DisplayPostRow(rows *sql.Rows) {
-// 	// tableau d'objet, à tester si ça ira
-// 	var htmlTable []Post
-// 	for rows.Next() {
-// 		// debug console
-// 		var post Post
-// 		err := rows.Scan(&post.Id, &post.IdUser, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes)
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		// %s = %v
-// 		htmlTable = append(htmlTable, post)
-// 	}
-// 	fmt.Printf("web post : %v ", htmlTable)
-// 	fmt.Println()
-// }
-
 // Function Gets $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 func GetAllPost() []Post {
 	db := InitDatabase("forum.db")
@@ -195,7 +141,7 @@ func GetAllPost() []Post {
 	for result.Next() {
 		// debug console
 		var post Post
-		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
+		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date, &post.Img)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -218,7 +164,7 @@ func GetOnePost(id string) Post {
 	}
 	var post Post
 	for result.Next() {
-		err2 := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
+		err2 := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date, &post.Img)
 		if err2 != nil {
 			log.Fatal(err)
 		}
@@ -240,7 +186,7 @@ func GetResponses(id string) []Reponse {
 	var res []Reponse
 	for result.Next() {
 		var reponse Reponse
-		err := result.Scan(&reponse.Id, &reponse.IdPost, &reponse.UserName, &reponse.Contenu, &reponse.Date)
+		err := result.Scan(&reponse.Id, &reponse.IdPost, &reponse.UserName, &reponse.Contenu, &reponse.Date, &reponse.Img)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -261,7 +207,7 @@ func GetUser(email string) User {
 	}
 	var user User
 	for result.Next() {
-		err := result.Scan(&user.Id, &user.Email, &user.Username, &user.Password)
+		err := result.Scan(&user.Id, &user.Email, &user.Username, &user.Password, &user.Img)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -282,7 +228,7 @@ func GetEmail(email string) bool {
 	var res []User
 	for result.Next() {
 		var user User
-		err := result.Scan(&user.Id, &user.Email, &user.Username, &user.Password)
+		err := result.Scan(&user.Id, &user.Email, &user.Username, &user.Password, &user.Img)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -312,7 +258,7 @@ func GetTagFilm() []Post {
 	for result.Next() {
 		// debug console
 		var post Post
-		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
+		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date, &post.Img)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -337,7 +283,7 @@ func GetTagSerie() []Post {
 	for result.Next() {
 		// debug console
 		var post Post
-		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
+		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date, &post.Img)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -412,7 +358,7 @@ func SelectByAscending(filter string) []Post {
 	var res []Post
 	for result.Next() {
 		var post Post
-		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
+		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date, &post.Img)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -432,7 +378,7 @@ func SelectByDescending(filter string) []Post {
 	var res []Post
 	for result.Next() {
 		var post Post
-		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date)
+		err := result.Scan(&post.Id, &post.UserName, &post.Tag, &post.Titre, &post.Description, &post.NbrLikes, &post.NbrDislikes, &post.Date, &post.Img)
 		if err != nil {
 			log.Fatal(err)
 		}

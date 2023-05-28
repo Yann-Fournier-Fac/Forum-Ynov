@@ -4,6 +4,7 @@ import (
 	"Josh/database"
 	"fmt"
 	"html/template"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -28,6 +29,7 @@ type PageHome struct {
 
 type PagePost struct {
 	OnePost         database.Post
+	IdPost          string
 	Responses       []database.Reponse
 	ConnectUserName string
 	ConnectUserImg  string
@@ -36,30 +38,32 @@ type PagePost struct {
 func ResetDB() {
 	database.Database()
 
-	database.DatabaseAndUsers([]string{"yann@ynov.com", "Yann", HashPassword("yann")})
-	database.DatabaseAndUsers([]string{"elisa@ynov.com", "Elisa", HashPassword("elisa")})
-	database.DatabaseAndUsers([]string{"kevin@ynov.com", "Kévin", HashPassword("kevin")})
-	database.DatabaseAndUsers([]string{"liliane@ynov.com", "Liliane", HashPassword("liliane")})
-	database.DatabaseAndUsers([]string{"joshua@ynov.com", "Joshua", HashPassword("joshua")})
+	database.DatabaseAndUsers([]string{"yann@ynov.com", "Yann", HashPassword("yann"), renderImg()})
+	database.DatabaseAndUsers([]string{"elisa@ynov.com", "Elisa", HashPassword("elisa"), renderImg()})
+	database.DatabaseAndUsers([]string{"kevin@ynov.com", "Kévin", HashPassword("kevin"), renderImg()})
+	database.DatabaseAndUsers([]string{"liliane@ynov.com", "Liliane", HashPassword("liliane"), renderImg()})
+	database.DatabaseAndUsers([]string{"joshua@ynov.com", "Joshua", HashPassword("joshua"), renderImg()})
 
-	database.DatabaseAndPost([]string{"Yann", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023"})
-	database.DatabaseAndPost([]string{"Yann", "serie", "Second Post", "Moi j'adore GOT", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023"})
-	database.DatabaseAndPost([]string{"Elisa", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023"})
-	database.DatabaseAndPost([]string{"Elisa", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023"})
-	database.DatabaseAndPost([]string{"Kevin", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023"})
-	database.DatabaseAndPost([]string{"Kevin", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023"})
-	database.DatabaseAndPost([]string{"Liliane", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023"})
-	database.DatabaseAndPost([]string{"Liliane", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023"})
-	database.DatabaseAndPost([]string{"Joshua", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023"})
-	database.DatabaseAndPost([]string{"Joshua", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023"})
+	database.DatabaseAndPost([]string{"Yann", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", renderImg()})
+	database.DatabaseAndPost([]string{"Yann", "serie", "Second Post", "Moi j'adore GOT", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", renderImg()})
+	database.DatabaseAndPost([]string{"Elisa", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", renderImg()})
+	database.DatabaseAndPost([]string{"Elisa", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", renderImg()})
+	database.DatabaseAndPost([]string{"Kevin", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", renderImg()})
+	database.DatabaseAndPost([]string{"Kevin", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", renderImg()})
+	database.DatabaseAndPost([]string{"Liliane", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", renderImg()})
+	database.DatabaseAndPost([]string{"Liliane", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", renderImg()})
+	database.DatabaseAndPost([]string{"Joshua", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", renderImg()})
+	database.DatabaseAndPost([]string{"Joshua", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", renderImg()})
 
-	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Yann", "Moi aussi !!!!!", transformDate()})
-	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Elisa", "Moi aussi !!!!!", transformDate()})
-	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Kevin", "Moi aussi !!!!!", transformDate()})
-	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Liliane", "Moi aussi !!!!!", transformDate()})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Yann", "Moi aussi !!!!!", transformDate(), "117902422"})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Elisa", "Moi aussi !!!!!", transformDate(), "117902422"})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Kevin", "Moi aussi !!!!!", transformDate(), "117902422"})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Liliane", "Moi aussi !!!!!", transformDate(), "117902422"})
 	// database.DatabaseAndSession([]string{"yann@ynov.com", "truc"})
 	// database.DatabaseAndSession([]string{"elisa@ynov.com",  "machin"})
 }
+
+// 02 - 14
 
 func initStruct() (PageHome, PagePost) {
 	var home PageHome
@@ -81,7 +85,7 @@ var tmplNewPost = template.Must(template.ParseFiles("./html/newpost.html"))
 var HomeStruct, PostStruct = initStruct()
 
 // var HomeStruct PageHome
-
+// var PostStruct PagePost
 func main() {
 
 	// ResetDB()
@@ -169,9 +173,35 @@ func homeTransiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
+	buLikesDislikes := r.FormValue("bulike/dislike")
+	if buLikesDislikes != "" {
+		idBu := strings.Split(buLikesDislikes, ",")
+		if idBu[1] == "like" {
+			nbr := database.RecupNbr("nbrLikes", idBu[0])
+			nbr += 1
+			database.UpdateNbr("nbrLikes", nbr, idBu[0])
+			// fmt.Println(idBu[0], "Like")
+		} else if idBu[1] == "dislike" {
+			nbr := database.RecupNbr("nbrDislikes", idBu[0])
+			nbr += 1
+			database.UpdateNbr("nbrDislikes", nbr, idBu[0])
+			// fmt.Println(idBu[0], "Dislike")
+		}
+	}
+
 	idPost := r.FormValue("buPost")
-	PostStruct.OnePost = database.GetOnePost(idPost)
-	PostStruct.Responses = database.GetResponses(idPost)
+	if idPost == "retour" {
+		PostStruct.IdPost = ""
+		http.Redirect(w, r, "/", http.StatusFound)
+	} else if idPost == "Envoyer" {
+		rep := r.FormValue("response")
+		database.DatabaseAndReponse([]string{PostStruct.IdPost, PostStruct.ConnectUserName, rep, transformDate(), PostStruct.ConnectUserImg})
+	}
+	if idPost != "Envoyer" && idPost != "" {
+		PostStruct.IdPost = idPost
+	}
+	PostStruct.OnePost = database.GetOnePost(PostStruct.IdPost)
+	PostStruct.Responses = database.GetResponses(PostStruct.IdPost)
 	err := tmplPost.Execute(w, PostStruct)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -191,7 +221,7 @@ func newPostTransiHandler(w http.ResponseWriter, r *http.Request) {
 		titre := r.FormValue("topic-name")
 		tag := r.FormValue("category")
 		description := r.FormValue("content")
-		database.DatabaseAndPost([]string{HomeStruct.ConnectUserInfo, tag, titre, description, strconv.Itoa(0), strconv.Itoa(0), transformDate()})
+		database.DatabaseAndPost([]string{HomeStruct.ConnectUserInfo, tag, titre, description, strconv.Itoa(0), strconv.Itoa(0), transformDate(), "117902422"})
 	}
 	filtres = "home"
 	filter(&HomeStruct)
@@ -223,14 +253,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 				HomeStruct.Error = 0
 
 				PostStruct.ConnectUserName = user.Username
-				// PostStruct.ConnectUserImg = user.Img
+				PostStruct.ConnectUserImg = user.Img
 			} else {
 				HomeStruct.ConnectUserInfo = ""
 				HomeStruct.IsConnecter = false
 				HomeStruct.Error = 2
 
 				PostStruct.ConnectUserName = ""
-				// PostStruct.ConnectUserImg = ""
+				PostStruct.ConnectUserImg = ""
 			}
 		} else {
 			HomeStruct.ConnectUserInfo = ""
@@ -238,7 +268,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			HomeStruct.Error = 1
 
 			PostStruct.ConnectUserName = ""
-			// PostStruct.ConnectUserImg = ""
+			PostStruct.ConnectUserImg = ""
 		}
 
 	}
@@ -249,11 +279,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	inscriptionName := r.FormValue("InscriptionName")
 	inscriptionEmail := r.FormValue("InscriptionEmail")
 	inscriptionMdp := r.FormValue("InscriptionMdp")
-	fmt.Println(inscriptionName)
+	// fmt.Println(inscriptionName)
 
 	if inscriptionName != "" {
 		if !database.GetEmail(inscriptionEmail) {
-			database.DatabaseAndUsers([]string{inscriptionEmail, inscriptionName, HashPassword(inscriptionMdp)})
+			img := renderImg()
+			database.DatabaseAndUsers([]string{inscriptionEmail, inscriptionName, HashPassword(inscriptionMdp), img})
 			// Generate a new session ID
 			sessionID := uuid.New().String()
 			// Set the session ID as a cookie with an expiration date
@@ -269,12 +300,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			HomeStruct.ConnectUserInfo = inscriptionName
 			HomeStruct.IsConnecter = true
 			HomeStruct.Error = 0
+			PostStruct.ConnectUserName = inscriptionName
+			PostStruct.ConnectUserImg = img
 		} else {
 			HomeStruct.Error = 3
-			fmt.Println("veuillez entrer une autre adresse mail. Celle-ci est déjà prise.")
+			// fmt.Println("veuillez entrer une autre adresse mail. Celle-ci est déjà prise.")
 		}
 	}
-
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
@@ -286,6 +318,8 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	HomeStruct.ConnectUserInfo = ""
 	HomeStruct.IsConnecter = false
+	PostStruct.ConnectUserName = ""
+	PostStruct.ConnectUserImg = ""
 
 	// Clear the session cookie
 	cookie := &http.Cookie{
@@ -338,4 +372,23 @@ func transformDate() string {
 	}
 	// fmt.Println(dateFinale)
 	return dateFinale
+}
+
+func renderImg() string {
+	img := "1179024"
+	nb := rand.Intn(15)
+	boolean := true
+	for boolean {
+		if nb != 0 || nb != 1 {
+			boolean = false
+		} else {
+			nb = rand.Intn(15)	
+		}
+	}
+	if nb < 10 {
+		img += "0" + strconv.Itoa(nb)
+	} else {
+		img += strconv.Itoa(nb)	
+	}
+	return img
 }

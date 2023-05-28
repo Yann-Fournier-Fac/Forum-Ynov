@@ -5,14 +5,16 @@ type User struct {
 	Email    string
 	Username string
 	Password string
+	Img      string
 }
 
 type Reponse struct {
-	Id      int64
-	IdPost  int64
+	Id       int64
+	IdPost   int64
 	UserName string
-	Contenu string
-	Date    string
+	Contenu  string
+	Date     string
+	Img      string
 }
 
 type Post struct {
@@ -24,6 +26,7 @@ type Post struct {
 	NbrLikes    int64
 	NbrDislikes int64
 	Date        string
+	Img         string
 	// IsLike      bool
 	// IsDislike   bool
 }
