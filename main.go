@@ -19,6 +19,7 @@ type PageHome struct {
 	Posts           []database.Post
 	IsConnecter     bool
 	ConnectUserInfo string
+	ConnectUserImg  string
 	Error           int
 	Try             bool
 }
@@ -33,6 +34,10 @@ type PagePost struct {
 	Responses       []database.Reponse
 	ConnectUserName string
 	ConnectUserImg  string
+}
+
+type PageNewPost struct {
+	ConnectUserImg string
 }
 
 func ResetDB() {
@@ -65,7 +70,7 @@ func ResetDB() {
 
 // 02 - 14
 
-func initStruct() (PageHome, PagePost) {
+func initStruct() (PageHome, PagePost, PageNewPost) {
 	var home PageHome
 	home.Posts = database.GetAllPost()
 	home.IsConnecter = false
@@ -76,16 +81,20 @@ func initStruct() (PageHome, PagePost) {
 	post.ConnectUserName = ""
 	post.ConnectUserImg = ""
 
-	return home, post
+	var newpost PageNewPost
+
+	return home, post, newpost
 }
 
 var tmplHome = template.Must(template.ParseFiles("./html/home.html"))
 var tmplPost = template.Must(template.ParseFiles("./html/post.html"))
 var tmplNewPost = template.Must(template.ParseFiles("./html/newpost.html"))
-var HomeStruct, PostStruct = initStruct()
+var HomeStruct, PostStruct, NewPostStruct = initStruct()
 
 // var HomeStruct PageHome
 // var PostStruct PagePost
+// var NewPostStruct PageNewPost
+
 func main() {
 
 	// ResetDB()
@@ -103,8 +112,9 @@ func main() {
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/logout", logoutHandler)
 
-	// http.Handle("/assets/css/", http.StripPrefix("/assets/css/", http.FileServer(http.Dir("assets/css"))))
-	// http.Handle("/assets/images/", http.StripPrefix("/assets/images/", http.FileServer(http.Dir("assets/images"))))
+	http.Handle("/assets/css/", http.StripPrefix("/assets/css/", http.FileServer(http.Dir("assets/css"))))
+	http.Handle("/assets/images/", http.StripPrefix("/assets/images/", http.FileServer(http.Dir("assets/images"))))
+	http.Handle("/assets/js/", http.StripPrefix("/assets/js/", http.FileServer(http.Dir("assets/js"))))
 
 	http.ListenAndServe(":8080", nil)
 }
@@ -192,7 +202,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	idPost := r.FormValue("buPost")
 	if idPost == "retour" {
 		PostStruct.IdPost = ""
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/ho", http.StatusFound)
 	} else if idPost == "Envoyer" {
 		rep := r.FormValue("response")
 		database.DatabaseAndReponse([]string{PostStruct.IdPost, PostStruct.ConnectUserName, rep, transformDate(), PostStruct.ConnectUserImg})
@@ -209,7 +219,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func newPostHandler(w http.ResponseWriter, r *http.Request) {
-	err := tmplNewPost.Execute(w, nil)
+	err := tmplNewPost.Execute(w, NewPostStruct)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -249,26 +259,35 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 				http.SetCookie(w, cookie)
 				database.DatabaseAndSession([]string{connectionEmail, sessionID})
 				HomeStruct.ConnectUserInfo = user.Username
+				HomeStruct.ConnectUserImg = user.Img
 				HomeStruct.IsConnecter = true
 				HomeStruct.Error = 0
 
 				PostStruct.ConnectUserName = user.Username
 				PostStruct.ConnectUserImg = user.Img
+
+				NewPostStruct.ConnectUserImg = user.Img
 			} else {
 				HomeStruct.ConnectUserInfo = ""
+				HomeStruct.ConnectUserImg = ""
 				HomeStruct.IsConnecter = false
 				HomeStruct.Error = 2
 
 				PostStruct.ConnectUserName = ""
 				PostStruct.ConnectUserImg = ""
+
+				NewPostStruct.ConnectUserImg = ""
 			}
 		} else {
 			HomeStruct.ConnectUserInfo = ""
+			HomeStruct.ConnectUserImg = ""
 			HomeStruct.IsConnecter = false
 			HomeStruct.Error = 1
 
 			PostStruct.ConnectUserName = ""
 			PostStruct.ConnectUserImg = ""
+
+			NewPostStruct.ConnectUserImg = ""
 		}
 
 	}
@@ -298,10 +317,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			http.SetCookie(w, cookie)
 			database.DatabaseAndSession([]string{inscriptionEmail, sessionID})
 			HomeStruct.ConnectUserInfo = inscriptionName
+			HomeStruct.ConnectUserImg = img
 			HomeStruct.IsConnecter = true
 			HomeStruct.Error = 0
 			PostStruct.ConnectUserName = inscriptionName
 			PostStruct.ConnectUserImg = img
+			NewPostStruct.ConnectUserImg = img
 		} else {
 			HomeStruct.Error = 3
 			// fmt.Println("veuillez entrer une autre adresse mail. Celle-ci est déjà prise.")
@@ -320,6 +341,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	HomeStruct.IsConnecter = false
 	PostStruct.ConnectUserName = ""
 	PostStruct.ConnectUserImg = ""
+	NewPostStruct.ConnectUserImg = ""
 
 	// Clear the session cookie
 	cookie := &http.Cookie{
@@ -379,16 +401,16 @@ func renderImg() string {
 	nb := rand.Intn(15)
 	boolean := true
 	for boolean {
-		if nb != 0 || nb != 1 {
+		if (nb != 0) || (nb != 1) {
 			boolean = false
 		} else {
-			nb = rand.Intn(15)	
+			nb = rand.Intn(15)
 		}
 	}
 	if nb < 10 {
 		img += "0" + strconv.Itoa(nb)
 	} else {
-		img += strconv.Itoa(nb)	
+		img += strconv.Itoa(nb)
 	}
 	return img
 }

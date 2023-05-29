@@ -15,8 +15,8 @@ body{
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    /* background: url(../images/5.jpg); */
-    background-color: #162938;
+    background: url(/assets/images/5.jpg);
+    /* background-color: #162938; */
     background-size: cover;
     background-position: center;
 }
@@ -159,7 +159,8 @@ nav button:hover{
 }
 
 .buttons-navbar{
-    display: inline-block;
+    display:flex;
+    flex-direction: row;
 }
 
 /* =============== SEARCH =============== */
