@@ -43,32 +43,35 @@ type PageNewPost struct {
 func ResetDB() {
 	database.Database()
 
-	database.DatabaseAndUsers([]string{"yann@ynov.com", "Yann", HashPassword("yann"), renderImg()})
-	database.DatabaseAndUsers([]string{"elisa@ynov.com", "Elisa", HashPassword("elisa"), renderImg()})
-	database.DatabaseAndUsers([]string{"kevin@ynov.com", "Kévin", HashPassword("kevin"), renderImg()})
-	database.DatabaseAndUsers([]string{"liliane@ynov.com", "Liliane", HashPassword("liliane"), renderImg()})
-	database.DatabaseAndUsers([]string{"joshua@ynov.com", "Joshua", HashPassword("joshua"), renderImg()})
+	yannimg := renderImg()
+	elisaimg := renderImg()
+	kevinimg := renderImg()
+	lilianeimg := renderImg()
+	joshuaimg := renderImg()
 
-	database.DatabaseAndPost([]string{"Yann", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", renderImg()})
-	database.DatabaseAndPost([]string{"Yann", "serie", "Second Post", "Moi j'adore GOT", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", renderImg()})
-	database.DatabaseAndPost([]string{"Elisa", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", renderImg()})
-	database.DatabaseAndPost([]string{"Elisa", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", renderImg()})
-	database.DatabaseAndPost([]string{"Kevin", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", renderImg()})
-	database.DatabaseAndPost([]string{"Kevin", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", renderImg()})
-	database.DatabaseAndPost([]string{"Liliane", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", renderImg()})
-	database.DatabaseAndPost([]string{"Liliane", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", renderImg()})
-	database.DatabaseAndPost([]string{"Joshua", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", renderImg()})
-	database.DatabaseAndPost([]string{"Joshua", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", renderImg()})
+	database.DatabaseAndUsers([]string{"yann@ynov.com", "Yann", HashPassword("yann"), yannimg})
+	database.DatabaseAndUsers([]string{"elisa@ynov.com", "Elisa", HashPassword("elisa"), elisaimg})
+	database.DatabaseAndUsers([]string{"kevin@ynov.com", "Kévin", HashPassword("kevin"), kevinimg})
+	database.DatabaseAndUsers([]string{"liliane@ynov.com", "Liliane", HashPassword("liliane"), lilianeimg})
+	database.DatabaseAndUsers([]string{"joshua@ynov.com", "Joshua", HashPassword("joshua"), joshuaimg})
 
-	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Yann", "Moi aussi !!!!!", transformDate(), "117902422"})
-	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Elisa", "Moi aussi !!!!!", transformDate(), "117902422"})
-	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Kevin", "Moi aussi !!!!!", transformDate(), "117902422"})
-	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Liliane", "Moi aussi !!!!!", transformDate(), "117902422"})
-	// database.DatabaseAndSession([]string{"yann@ynov.com", "truc"})
-	// database.DatabaseAndSession([]string{"elisa@ynov.com",  "machin"})
+	database.DatabaseAndPost([]string{"Yann", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", yannimg})
+	database.DatabaseAndPost([]string{"Yann", "serie", "Second Post", "Moi j'adore GOT", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", yannimg})
+	database.DatabaseAndPost([]string{"Elisa", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", elisaimg})
+	database.DatabaseAndPost([]string{"Elisa", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", elisaimg})
+	database.DatabaseAndPost([]string{"Kevin", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", kevinimg})
+	database.DatabaseAndPost([]string{"Kevin", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", kevinimg})
+	database.DatabaseAndPost([]string{"Liliane", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", lilianeimg})
+	database.DatabaseAndPost([]string{"Liliane", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", lilianeimg})
+	database.DatabaseAndPost([]string{"Joshua", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", joshuaimg})
+	database.DatabaseAndPost([]string{"Joshua", "serie", "Second Post", "Moi j'adore Got", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", joshuaimg})
+
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Yann", "Moi aussi !!!!!", transformDate(), yannimg})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Elisa", "Moi aussi !!!!!", transformDate(), elisaimg})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Kevin", "Moi aussi !!!!!", transformDate(), kevinimg})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Liliane", "Moi aussi !!!!!", transformDate(), lilianeimg})
+	database.DatabaseAndReponse([]string{strconv.Itoa(1), "Joshua", "Moi aussi !!!!!", transformDate(), joshuaimg})
 }
-
-// 02 - 14
 
 func initStruct() (PageHome, PagePost, PageNewPost) {
 	var home PageHome
@@ -89,15 +92,15 @@ func initStruct() (PageHome, PagePost, PageNewPost) {
 var tmplHome = template.Must(template.ParseFiles("./html/home.html"))
 var tmplPost = template.Must(template.ParseFiles("./html/post.html"))
 var tmplNewPost = template.Must(template.ParseFiles("./html/newpost.html"))
-var HomeStruct, PostStruct, NewPostStruct = initStruct()
+// var HomeStruct, PostStruct, NewPostStruct = initStruct()
 
-// var HomeStruct PageHome
-// var PostStruct PagePost
-// var NewPostStruct PageNewPost
+var HomeStruct PageHome
+var PostStruct PagePost
+var NewPostStruct PageNewPost
 
 func main() {
 
-	// ResetDB()
+	ResetDB()
 	// database.Database()
 
 	fmt.Printf("\n")
@@ -401,7 +404,9 @@ func renderImg() string {
 	nb := rand.Intn(15)
 	boolean := true
 	for boolean {
-		if (nb != 0) || (nb != 1) {
+		if nb != 0 {
+			boolean = false
+		} else if nb != 1 {
 			boolean = false
 		} else {
 			nb = rand.Intn(15)
