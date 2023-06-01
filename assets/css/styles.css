@@ -8,8 +8,10 @@
 body{
     display: flex;
     justify-content: center;
+    flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    min-width: 100vh;
     background: url(/assets/images/5.jpg);
     /* background-color: #162938; */
     background-size: cover;
@@ -34,7 +36,7 @@ header{
 
 .logo{
     font-size: 2rem;
-    color: #fff;
+    color: white;
     user-select: none;
 }
 
@@ -175,100 +177,11 @@ nav button:hover{
     flex-direction: row;
 }
 
-/* =============== SEARCH =============== */
-/* .container{
-    height: auto;
-    margin-inline: 1.5rem;
-    display: inline-block;
-    display: grid;
-    place-items: center;
-}
 
-.search{
-    position: relative;
-    width: 50px;
-    height: 50px;
-    background-color: #fff;
-    box-shadow: 0 4px 24px hsla(222, 68%, 12%, .1);
-    border-radius: 4rem;
-    padding: 10px;
-    overflow: hidden;
-    transition: width .5s cubic-bezier(.9, 0, .3, .9);
-}
-
-.search__input{
-    background-color: var(--body-color);
-    border: none;
-    outline: none;
-    width: calc(100% - 64px);
-    height: 100%;
-    border-radius: 4rem;
-    padding-left: 14px;
-    font-family: var(--body-font);
-    font-size: var(--small-font-size);
-    font-weight: 500;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 1.5s;
-}
-
-.search__input:-webkit-autofill{
-    box-shadow: 0 0 0 100px var(--white-color) inset;
-}
-
-.search__button{
-    width: 3.125rem; /* soit 56 px 
-    height: 3.125rem; /* soit 56 px 
-    background-color: var(--dark-color);
-    border-radius: 50%;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    margin: auto;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    transition: transform .6s cubic-bezier(.9, 0, .3, .9);
-}
-
-.search__icon,
-.search__close{
-    color: var(--white-color);
-    font-size: 1.5rem;
-    position: absolute;
-    transition: opacity .5s cubic-bezier(.9, 0, .3, .9);
-}
-
-.search__close{
-    opacity: 0;
-}
-
-/* Search animated 
-.show-search{
-    width: 100%;
-} 
-
-.show-search .search__input{
-    opacity: 1;
-    pointer-events: initial;
-}
-
-.show-search .search__button{
-    transform: rotate(90deg);
-}
-
-.show-search .search__icon{
-    opacity: 0;
-}
-
-.show-search .search__close {
-    opacity: 1;
-} */
 /* =============== CONNEXION FORM =============== */
 .wrapper{
     position: absolute;
-    top: 150px;
+    top: 100px;
     width: 400px;
     height: 440px;
     background: transparent;
@@ -278,16 +191,15 @@ nav button:hover{
     box-shadow: 0 0 30px rgba(255, 255, 255, .5);
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
     overflow: hidden;
     transform: scale(0);
     transition: transform .3s ease, height .3s ease;
-    z-index: 100000;
+    z-index: 1;
 }
 
 .wrapper.login-popup{
     transform: scale(1);
-    z-index: 10000;
 }
 /* .wrapper.register-popup{
     transform: scale(1);
@@ -310,7 +222,6 @@ nav button:hover{
 .wrapper .form-box.login{
     transition: transform .3s ease;
     transform: translateX(0);
-    z-index: 10000;
 }
 .wrapper.active .form-box.login{
     transition: none;
@@ -321,7 +232,6 @@ nav button:hover{
     position: absolute;
     transition: none;
     transform: translateX(400px);
-    z-index: 10000;
 }
 .wrapper.active .form-box.register{
     transition: transform .3s ease;
@@ -358,6 +268,7 @@ nav button:hover{
     border-bottom: 2px solid #162938;
     margin: 30px 0;
 }
+
 .input-box label{
     position: absolute;
     top: 50%;
@@ -421,14 +332,19 @@ nav button:hover{
 .login-register p a{
     text-decoration: underline;
 }
+
 /*=============== BREAKPOINTS ===============*/
 /* For medium devices */
 
 /* ============= MAIN PAGE ============= */
 
 /* ============= TOP POST WINDOW ============= */
+.testounet{
+    display: inline-block;
+    margin-top: 120px;
+}
+
 .global__container{
-    margin-top: 175px;
     width: 800px;
     height: auto;
     background: transparent;
@@ -531,18 +447,20 @@ nav button:hover{
 }
 
 .notifConnected{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: absolute;
-    left: 1870px;
-    opacity: 0;
+    right: -500px;
     top: 175px;
-    width: 15%;
+    width: 200px;
     height: 50px;
-    background: transparent;
+    background: rgba(255, 0, 0, 0.38);
     border: 2px solid #fff;
     outline: none;
     border-radius: 6px;
     font-size: 1.1rem;
-    color: #fff;
+    color: white;
     font-weight: 500;
     margin-left: 10px;
     padding: .2rem .5rem;

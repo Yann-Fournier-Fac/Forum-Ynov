@@ -8,6 +8,7 @@
 
     <!-- ================= CSS ================= -->
     <link rel="stylesheet" href="../assets/css/styles.css">
+
     <title>Projet Forum Ynov</title>
 
 </head>
@@ -49,11 +50,11 @@
     {{if .IsConnecter}}
         <p class="notifBubble"> </p>
         <p class="notifBubbleWave"> </p>
-        <a class="notifConnected">Vous êtes connecter !</a>
+        <a class="notifConnected">Vous êtes connecté !</a>
     {{else}}
         <p class="notifBubble"> </p>
         <p class="notifBubbleWave"> </p>
-        <a class="notifConnected">Vous n'êtes pas connecter !</a>
+        <a class="notifConnected">Vous n'êtes pas connecté !</a>
     {{end}}
 
     <div class="wrapper">
@@ -68,7 +69,7 @@
                 </div>
                 <div class="input-box">
                     <i class="ri-lock-line icon"></i>
-                    <input type="password" required name="ConnectionMdp" value="">
+                    <input type="password" required name="InscriptionMdp" value="">
                     <label>Mot de passe</label>
                 </div>
                 <button type="submit" class="form-box-button">Login</button>
@@ -110,22 +111,23 @@
         </div>
     </div>
 
-    
-    <main class="global__container">
+    <div class="testounet">
         {{if .IsConnecter}}
         {{else}}
-            <p style="margin-bottom: 20px;margin-left: 20px; color: rgb(255, 0, 0); font-size: 20px;">Veuillez vous connecter pour profiter des fonctionnalités du forum.</p>
+            <p style="color: rgb(255, 0, 0); font-size: 1.2rem;">Veuillez vous connecter pour profiter des fonctionnalités du forum.</p>
         {{end}}
 
         {{if eq .Error 1}}
-            <p style="margin-bottom: 20px;margin-left: 20px; color: rgb(255, 0, 0); font-size: 20px;">Votre session est déjà ouverte. Vous ne pouvez pas en ouvrir une autre.</p>
+            <p style="color: rgb(255, 0, 0); font-size: 1.2rem;">Votre session est déjà ouverte. Vous ne pouvez pas en ouvrir une autre.</p>
         {{else if eq .Error 2}}
-            <p style="margin-bottom: 20px;margin-left: 20px; color: rgb(255, 0, 0); font-size: 20px;">Impossible de ce connceter. Veuillez entrer à nouveau vos identifiants.</p>
+            <p style="color: rgb(255, 0, 0); font-size: 1.2rem;">Impossible de ce connceter. Veuillez entrer à nouveau vos identifiants.</p>
         {{else if eq .Error 3}}
-            <p style="margin-bottom: 20px;margin-left: 20px; color: rgb(255, 0, 0); font-size: 20px;">Impossible de creer votre compte. Cette addresse mail est déjà pirse.</p>
+            <p style="color: rgb(255, 0, 0); font-size: 1.2rem;">Impossible de creer votre compte. Cette addresse mail est déjà pirse.</p>
         {{else if eq .Error 4}}
-            <p style="margin-bottom: 20px;margin-left: 20px; color: rgb(255, 0, 0); font-size: 20px;">Votre session à expirer !</p>
+            <p style="color: rgb(255, 0, 0); font-size: 1.2rem;">Votre session à expirer !</p>
         {{end}}
+    </div>
+    <main class="global__container">
 
         <!-- <p>Veuillez vous connecter pour profiter des fonctionnalités du forum.</p> -->
         <div class="header-post__container">
@@ -219,9 +221,8 @@
             {{end}}
         </div>
     </main>
-
-        <!-- ================= SCRIPTS ================= -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.5.1/gsap.min.js"></script>
-        <script src="../assets/js/main.js"></script>
 </body>
+    <!-- ================= SCRIPTS ================= -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.5.1/gsap.min.js"></script>
+    <script src="../assets/js/main.js"></script>
 </html>
