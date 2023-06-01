@@ -2,6 +2,7 @@ package main
 
 import (
 	"Josh/database"
+	"crypto/sha256"
 	"fmt"
 	"html/template"
 	"math/rand"
@@ -49,11 +50,11 @@ func ResetDB() {
 	lilianeimg := renderImg()
 	joshuaimg := renderImg()
 
-	database.DatabaseAndUsers([]string{"yann@ynov.com", "Yann", HashPassword("yann"), yannimg})
-	database.DatabaseAndUsers([]string{"elisa@ynov.com", "Elisa", HashPassword("elisa"), elisaimg})
-	database.DatabaseAndUsers([]string{"kevin@ynov.com", "Kévin", HashPassword("kevin"), kevinimg})
-	database.DatabaseAndUsers([]string{"liliane@ynov.com", "Liliane", HashPassword("liliane"), lilianeimg})
-	database.DatabaseAndUsers([]string{"joshua@ynov.com", "Joshua", HashPassword("joshua"), joshuaimg})
+	database.DatabaseAndUsers([]string{"yann@ynov.com", "Yann", HashPassword2("yann"), yannimg})
+	database.DatabaseAndUsers([]string{"elisa@ynov.com", "Elisa", HashPassword2("elisa"), elisaimg})
+	database.DatabaseAndUsers([]string{"kevin@ynov.com", "Kévin", HashPassword2("kevin"), kevinimg})
+	database.DatabaseAndUsers([]string{"liliane@ynov.com", "Liliane", HashPassword2("liliane"), lilianeimg})
+	database.DatabaseAndUsers([]string{"joshua@ynov.com", "Joshua", HashPassword2("joshua"), joshuaimg})
 
 	database.DatabaseAndPost([]string{"Yann", "film", "First Post", "Moi j'adore ET", strconv.Itoa(55), strconv.Itoa(3), "27 Mai 2023", yannimg})
 	database.DatabaseAndPost([]string{"Yann", "serie", "Second Post", "Moi j'adore GOT", strconv.Itoa(2), strconv.Itoa(33), "27 Mai 2023", yannimg})
@@ -143,6 +144,13 @@ func filter(HomeStruct *PageHome) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
+	// cookie := &http.Cookie{
+	// 	Name:     "Session",
+	// 	Value:    "01",
+	// 	Expires:  time.Now().Add(23 * time.Hour),
+	// 	HttpOnly: true,
+	// }
+	// http.SetCookie(w, cookie)
 	err := tmplHome.Execute(w, HomeStruct)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -150,11 +158,11 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func homeTransiHandler(w http.ResponseWriter, r *http.Request) {
-	sessionCookie, _ := r.Cookie("Session")
-	if time.Now().Hour() >= sessionCookie.Expires.Hour() && time.Now().Minute() >= sessionCookie.Expires.Minute() && time.Now().Second() >= sessionCookie.Expires.Second() {
-		HomeStruct.Error = 4
-		http.Redirect(w, r, "/logout", http.StatusFound)
-	} else {
+	// sessionCookie, _ := r.Cookie("Session")
+	// if time.Now().Hour() >= sessionCookie.Expires.Hour()  && time.Now().Minute() >= sessionCookie.Expires.Minute() && time.Now().Second() >= sessionCookie.Expires.Second() {
+	// 	HomeStruct.Error = 4
+	// 	http.Redirect(w, r, "/logout", http.StatusFound)
+	// } else {
 		buLikesDislikes := r.FormValue("bulike/dislike")
 		if buLikesDislikes != "" {
 			idBu := strings.Split(buLikesDislikes, ",")
@@ -188,15 +196,15 @@ func homeTransiHandler(w http.ResponseWriter, r *http.Request) {
 
 		filter(&HomeStruct)
 		http.Redirect(w, r, "/", http.StatusFound)
-	}
+	// }
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
-	sessionCookie, _ := r.Cookie("Session")
-	if time.Now().Hour() >= sessionCookie.Expires.Hour() && time.Now().Minute() >= sessionCookie.Expires.Minute() && time.Now().Second() >= sessionCookie.Expires.Second() {
-		HomeStruct.Error = 4
-		http.Redirect(w, r, "/logout", http.StatusFound)
-	} else {
+	// sessionCookie, _ := r.Cookie("Session")
+	// if time.Now().Hour() >= sessionCookie.Expires.Hour() && time.Now().Minute() >= sessionCookie.Expires.Minute() && time.Now().Second() >= sessionCookie.Expires.Second() {
+	// 	HomeStruct.Error = 4
+	// 	http.Redirect(w, r, "/logout", http.StatusFound)
+	// } else {
 		buLikesDislikes := r.FormValue("bulike/dislike")
 		if buLikesDislikes != "" {
 			idBu := strings.Split(buLikesDislikes, ",")
@@ -230,7 +238,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-	}
+	// }
 }
 
 func newPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -241,11 +249,11 @@ func newPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func newPostTransiHandler(w http.ResponseWriter, r *http.Request) {
-	sessionCookie, _ := r.Cookie("Session")
-	if time.Now().Hour() >= sessionCookie.Expires.Hour() && time.Now().Minute() >= sessionCookie.Expires.Minute() && time.Now().Second() >= sessionCookie.Expires.Second() {
-		HomeStruct.Error = 4
-		http.Redirect(w, r, "/logout", http.StatusFound)
-	} else {
+	// sessionCookie, _ := r.Cookie("Session")
+	// if time.Now().Hour() >= sessionCookie.Expires.Hour() && time.Now().Minute() >= sessionCookie.Expires.Minute() && time.Now().Second() >= sessionCookie.Expires.Second() {
+	// 	HomeStruct.Error = 4
+	// 	http.Redirect(w, r, "/logout", http.StatusFound)
+	// } else {
 		buton := r.FormValue("buCreerPost")
 		if buton == "creer" {
 			titre := r.FormValue("topic-name")
@@ -256,17 +264,21 @@ func newPostTransiHandler(w http.ResponseWriter, r *http.Request) {
 		filtres = "home"
 		filter(&HomeStruct)
 		http.Redirect(w, r, "/", http.StatusFound)
-	}
+	// }
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// Connection -----------------------------------------------------------------
 	connectionEmail := r.FormValue("ConnectionEmail")
 	connectionMdp := r.FormValue("ConnectionMdp")
+	fmt.Println(connectionMdp)
 	if connectionEmail != "" {
 		user := database.GetUser(connectionEmail)
 		if database.GetSession(user.Email) {
-			if CheckPasswordHash(connectionMdp, user.Password) && user.Email == connectionEmail {
+			// fmt.Println(HashPassword2(connectionMdp))
+			// fmt.Println(user.Password)
+			if user.Password == HashPassword2(connectionMdp) && user.Email == connectionEmail {
+				fmt.Println("c ok")
 				// Generate a new session ID
 				sessionID := uuid.New().String()
 				// Set the session ID as a cookie with an expiration date
@@ -324,7 +336,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if inscriptionName != "" {
 		if !database.GetEmail(inscriptionEmail) {
 			img := renderImg()
-			database.DatabaseAndUsers([]string{inscriptionEmail, inscriptionName, HashPassword(inscriptionMdp), img})
+			database.DatabaseAndUsers([]string{inscriptionEmail, inscriptionName, HashPassword2(inscriptionMdp), img})
 			// Generate a new session ID
 			sessionID := uuid.New().String()
 			// Set the session ID as a cookie with an expiration date
@@ -422,9 +434,7 @@ func renderImg() string {
 	nb := rand.Intn(15)
 	boolean := true
 	for boolean {
-		if nb != 0 {
-			boolean = false
-		} else if nb != 1 {
+		if (nb != 0) && (nb != 1){
 			boolean = false
 		} else {
 			nb = rand.Intn(15)
@@ -436,4 +446,19 @@ func renderImg() string {
 		img += strconv.Itoa(nb)
 	}
 	return img
+}
+
+func HashPassword2(password string) string {
+	h := sha256.New()
+	h.Write([]byte(password))
+	hashed := h.Sum(nil)
+	return string(hashed)
+}
+
+func byteToString(tab [32]byte) string {
+	str := ""
+	for i := 0; i < len(tab); i++ {
+		str += string(tab[i])
+	}
+	return str
 }

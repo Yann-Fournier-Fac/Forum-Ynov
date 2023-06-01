@@ -69,7 +69,7 @@
                 </div>
                 <div class="input-box">
                     <i class="ri-lock-line icon"></i>
-                    <input type="password" required name="InscriptionMdp" value="">
+                    <input type="password" required name="ConnectionMdp" value="">
                     <label>Mot de passe</label>
                 </div>
                 <button type="submit" class="form-box-button">Login</button>
@@ -190,7 +190,7 @@
                     <div class="post__subject" id="post-{{.Id}}">
                         <div class="left__subject">
                             <div class="subject_title">
-                                    <button style="color: rgb(128, 0, 128);border-style: none; background-color: rgba(255, 0, 25, 0); text-decoration: underline; font-size: 17px; margin-right: 10px;" name="buPost" value="{{.Id}}">
+                                    <button formaction="/post" style="color: rgb(128, 0, 128);border-style: none; background-color: rgba(255, 0, 25, 0); text-decoration: underline; font-size: 17px; margin-right: 10px;" name="buPost" value="{{.Id}}">
                                         {{.Titre}}
                                     </button>
                                 <span>#{{.Tag}}</span>
