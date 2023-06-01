@@ -123,6 +123,8 @@
             <p style="margin-bottom: 20px;margin-left: 20px; color: rgb(255, 0, 0); font-size: 20px;">Impossible de ce connceter. Veuillez entrer à nouveau vos identifiants.</p>
         {{else if eq .Error 3}}
             <p style="margin-bottom: 20px;margin-left: 20px; color: rgb(255, 0, 0); font-size: 20px;">Impossible de creer votre compte. Cette addresse mail est déjà pirse.</p>
+        {{else if eq .Error 4}}
+            <p style="margin-bottom: 20px;margin-left: 20px; color: rgb(255, 0, 0); font-size: 20px;">Votre session à expirer !</p>
         {{end}}
 
         <!-- <p>Veuillez vous connecter pour profiter des fonctionnalités du forum.</p> -->

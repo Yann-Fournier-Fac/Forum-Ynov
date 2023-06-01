@@ -92,15 +92,15 @@ func initStruct() (PageHome, PagePost, PageNewPost) {
 var tmplHome = template.Must(template.ParseFiles("./html/home.html"))
 var tmplPost = template.Must(template.ParseFiles("./html/post.html"))
 var tmplNewPost = template.Must(template.ParseFiles("./html/newpost.html"))
-// var HomeStruct, PostStruct, NewPostStruct = initStruct()
+var HomeStruct, PostStruct, NewPostStruct = initStruct()
 
-var HomeStruct PageHome
-var PostStruct PagePost
-var NewPostStruct PageNewPost
+// var HomeStruct PageHome
+// var PostStruct PagePost
+// var NewPostStruct PageNewPost
 
 func main() {
 
-	ResetDB()
+	// ResetDB()
 	// database.Database()
 
 	fmt.Printf("\n")
@@ -150,74 +150,86 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func homeTransiHandler(w http.ResponseWriter, r *http.Request) {
-	buLikesDislikes := r.FormValue("bulike/dislike")
-	if buLikesDislikes != "" {
-		idBu := strings.Split(buLikesDislikes, ",")
-		if idBu[1] == "like" {
-			nbr := database.RecupNbr("nbrLikes", idBu[0])
-			nbr += 1
-			database.UpdateNbr("nbrLikes", nbr, idBu[0])
-			//fmt.Println(idBu[0], "Like")
-		} else if idBu[1] == "dislike" {
-			nbr := database.RecupNbr("nbrDislikes", idBu[0])
-			nbr += 1
-			database.UpdateNbr("nbrDislikes", nbr, idBu[0])
-			// fmt.Println(idBu[0], "Dislike")
+	sessionCookie, _ := r.Cookie("Session")
+	if time.Now().Hour() >= sessionCookie.Expires.Hour() && time.Now().Minute() >= sessionCookie.Expires.Minute() && time.Now().Second() >= sessionCookie.Expires.Second() {
+		HomeStruct.Error = 4
+		http.Redirect(w, r, "/logout", http.StatusFound)
+	} else {
+		buLikesDislikes := r.FormValue("bulike/dislike")
+		if buLikesDislikes != "" {
+			idBu := strings.Split(buLikesDislikes, ",")
+			if idBu[1] == "like" {
+				nbr := database.RecupNbr("nbrLikes", idBu[0])
+				nbr += 1
+				database.UpdateNbr("nbrLikes", nbr, idBu[0])
+				//fmt.Println(idBu[0], "Like")
+			} else if idBu[1] == "dislike" {
+				nbr := database.RecupNbr("nbrDislikes", idBu[0])
+				nbr += 1
+				database.UpdateNbr("nbrDislikes", nbr, idBu[0])
+				// fmt.Println(idBu[0], "Dislike")
+			}
 		}
-	}
 
-	headerLinks := r.FormValue("link")
-	if headerLinks != "" {
-		filtres = headerLinks
-	}
+		headerLinks := r.FormValue("link")
+		if headerLinks != "" {
+			filtres = headerLinks
+		}
 
-	BuMenuDeroulant := r.FormValue("BuMenuDeroulant")
-	if BuMenuDeroulant != "" {
-		filtres = BuMenuDeroulant
-	}
+		BuMenuDeroulant := r.FormValue("BuMenuDeroulant")
+		if BuMenuDeroulant != "" {
+			filtres = BuMenuDeroulant
+		}
 
-	trucs := r.FormValue("creerPost")
-	if trucs != "" {
-		fmt.Println(trucs)
-	}
+		trucs := r.FormValue("creerPost")
+		if trucs != "" {
+			fmt.Println(trucs)
+		}
 
-	filter(&HomeStruct)
-	http.Redirect(w, r, "/", http.StatusFound)
+		filter(&HomeStruct)
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
-	buLikesDislikes := r.FormValue("bulike/dislike")
-	if buLikesDislikes != "" {
-		idBu := strings.Split(buLikesDislikes, ",")
-		if idBu[1] == "like" {
-			nbr := database.RecupNbr("nbrLikes", idBu[0])
-			nbr += 1
-			database.UpdateNbr("nbrLikes", nbr, idBu[0])
-			// fmt.Println(idBu[0], "Like")
-		} else if idBu[1] == "dislike" {
-			nbr := database.RecupNbr("nbrDislikes", idBu[0])
-			nbr += 1
-			database.UpdateNbr("nbrDislikes", nbr, idBu[0])
-			// fmt.Println(idBu[0], "Dislike")
+	sessionCookie, _ := r.Cookie("Session")
+	if time.Now().Hour() >= sessionCookie.Expires.Hour() && time.Now().Minute() >= sessionCookie.Expires.Minute() && time.Now().Second() >= sessionCookie.Expires.Second() {
+		HomeStruct.Error = 4
+		http.Redirect(w, r, "/logout", http.StatusFound)
+	} else {
+		buLikesDislikes := r.FormValue("bulike/dislike")
+		if buLikesDislikes != "" {
+			idBu := strings.Split(buLikesDislikes, ",")
+			if idBu[1] == "like" {
+				nbr := database.RecupNbr("nbrLikes", idBu[0])
+				nbr += 1
+				database.UpdateNbr("nbrLikes", nbr, idBu[0])
+				// fmt.Println(idBu[0], "Like")
+			} else if idBu[1] == "dislike" {
+				nbr := database.RecupNbr("nbrDislikes", idBu[0])
+				nbr += 1
+				database.UpdateNbr("nbrDislikes", nbr, idBu[0])
+				// fmt.Println(idBu[0], "Dislike")
+			}
 		}
-	}
 
-	idPost := r.FormValue("buPost")
-	if idPost == "retour" {
-		PostStruct.IdPost = ""
-		http.Redirect(w, r, "/ho", http.StatusFound)
-	} else if idPost == "Envoyer" {
-		rep := r.FormValue("response")
-		database.DatabaseAndReponse([]string{PostStruct.IdPost, PostStruct.ConnectUserName, rep, transformDate(), PostStruct.ConnectUserImg})
-	}
-	if idPost != "Envoyer" && idPost != "" {
-		PostStruct.IdPost = idPost
-	}
-	PostStruct.OnePost = database.GetOnePost(PostStruct.IdPost)
-	PostStruct.Responses = database.GetResponses(PostStruct.IdPost)
-	err := tmplPost.Execute(w, PostStruct)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		idPost := r.FormValue("buPost")
+		if idPost == "retour" {
+			PostStruct.IdPost = ""
+			http.Redirect(w, r, "/ho", http.StatusFound)
+		} else if idPost == "Envoyer" {
+			rep := r.FormValue("response")
+			database.DatabaseAndReponse([]string{PostStruct.IdPost, PostStruct.ConnectUserName, rep, transformDate(), PostStruct.ConnectUserImg})
+		}
+		if idPost != "Envoyer" && idPost != "" {
+			PostStruct.IdPost = idPost
+		}
+		PostStruct.OnePost = database.GetOnePost(PostStruct.IdPost)
+		PostStruct.Responses = database.GetResponses(PostStruct.IdPost)
+		err := tmplPost.Execute(w, PostStruct)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}
 }
 
@@ -229,16 +241,22 @@ func newPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func newPostTransiHandler(w http.ResponseWriter, r *http.Request) {
-	buton := r.FormValue("buCreerPost")
-	if buton == "creer" {
-		titre := r.FormValue("topic-name")
-		tag := r.FormValue("category")
-		description := r.FormValue("content")
-		database.DatabaseAndPost([]string{HomeStruct.ConnectUserInfo, tag, titre, description, strconv.Itoa(0), strconv.Itoa(0), transformDate(), "117902422"})
+	sessionCookie, _ := r.Cookie("Session")
+	if time.Now().Hour() >= sessionCookie.Expires.Hour() && time.Now().Minute() >= sessionCookie.Expires.Minute() && time.Now().Second() >= sessionCookie.Expires.Second() {
+		HomeStruct.Error = 4
+		http.Redirect(w, r, "/logout", http.StatusFound)
+	} else {
+		buton := r.FormValue("buCreerPost")
+		if buton == "creer" {
+			titre := r.FormValue("topic-name")
+			tag := r.FormValue("category")
+			description := r.FormValue("content")
+			database.DatabaseAndPost([]string{HomeStruct.ConnectUserInfo, tag, titre, description, strconv.Itoa(0), strconv.Itoa(0), transformDate(), "117902422"})
+		}
+		filtres = "home"
+		filter(&HomeStruct)
+		http.Redirect(w, r, "/", http.StatusFound)
 	}
-	filtres = "home"
-	filter(&HomeStruct)
-	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -252,7 +270,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 				// Generate a new session ID
 				sessionID := uuid.New().String()
 				// Set the session ID as a cookie with an expiration date
-				expiration := time.Now().Add(30 * time.Minute) // Session expires after 1 minute
+				expiration := time.Now().Add(1 * time.Hour) // Session expires after 1 minute
 				cookie := &http.Cookie{
 					Name:     "Session",
 					Value:    sessionID,
@@ -310,7 +328,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			// Generate a new session ID
 			sessionID := uuid.New().String()
 			// Set the session ID as a cookie with an expiration date
-			expiration := time.Now().Add(30 * time.Minute) // Session expires after 1 minute
+			expiration := time.Now().Add(1 * time.Hour) // Session expires after 1 minute
 			cookie := &http.Cookie{
 				Name:     "Session",
 				Value:    sessionID,
